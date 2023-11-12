@@ -7,11 +7,17 @@
           <div class="project-modal-content">
             <div class="col text-h6 ellipsis">{{openProject.title}}</div>
             <div class="tasks-container">
-              <ul>
-                <li v-for="task in project.tasks" :key="task.id" class="task-item">
-                  <span>{{task.title}}</span>
-                </li>
-              </ul>
+              <q-item tag="label" v-for="task in project.tasks" :key="task.id" class="task-item" v-ripple>
+                <q-item-section side top>
+                  <q-checkbox v-model="task.isDone" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>{{task.title}}</q-item-label>
+                  <q-item-label caption>
+                    Minha descrição que ainda não existe
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
             </div>
           </div>
         </q-card-section>
