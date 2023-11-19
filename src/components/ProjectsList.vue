@@ -9,13 +9,12 @@
 </div>
 </template>
 
-<script setup >
+<script setup>
+import {  defineProps } from 'vue';
 import ProjectCard from 'src/components/ProjectCard.vue';
 
-defineProps({
-  projects:[],
-  listTitle:String
-})
+defineProps(['projects', 'title']);
+
 </script>
 <style scoped>
  .column-container{
