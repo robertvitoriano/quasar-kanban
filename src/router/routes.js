@@ -1,6 +1,3 @@
-const isLoggedInd =
-  localStorage.getItem("token") && JSON.parse(localStorage.getItem("token"));
-
 const routes = [
   {
     path: "/login",

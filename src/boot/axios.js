@@ -1,6 +1,5 @@
 import { boot } from "quasar/wrappers";
 import axios from "axios";
-import { useAuthStore } from "src/stores/auth";
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
 // If any client changes this (global) instance, it might be a
@@ -8,12 +7,13 @@ import { useAuthStore } from "src/stores/auth";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({ baseURL: "http://127.0.0.1:8000/api" });
-const authStore = useAuthStore();
 api.interceptors.request.use(
   (config) => {
-    const token = authStore.getToken;
+    const token = localStorage.getItem("token")
+      ? `Bearer ${localStorage.getItem("token")}`
+      : "";
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = token;
     }
     return config;
   },

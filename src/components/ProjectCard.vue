@@ -1,52 +1,49 @@
 <template>
   <div class="card-container"  @click="openProjectModal(project)">
     <span class="project-title">{{project.title}}</span>
-    <q-dialog v-model="isProjectModalOpen">
-      <q-card class="project-modal">
-        <q-card-section class="project-modal-container">
-          <div class="project-modal-content">
-            <div class="col text-h6 ellipsis">{{openProject.title}}</div>
-            <div class="tasks-container">
-              <q-item tag="label" v-for="task in project.tasks" :key="task.id" class="task-item" v-ripple>
-                <q-item-section side top>
-                  <q-checkbox v-model="task.isDone" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>{{task.title}}</q-item-label>
-                  <q-item-label caption>
-                    Minha descrição que ainda não existe
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-            </div>
-          </div>
-        </q-card-section>
-
-      </q-card>
-    </q-dialog>
   </div>
+  <q-dialog v-model="isProjectModalOpen">
+    <q-card class="project-modal">
+      <q-card-section class="project-modal-container">
+        <div class="project-modal-content">
+          <div class="col text-h6 ellipsis">{{project.title}}</div>
+          <div class="tasks-container">
+            <q-item tag="label" v-for="task in project.tasks" :key="task.id" class="task-item" v-ripple>
+              <q-item-section side top>
+                <q-checkbox v-model="task.done" />
+              </q-item-section>
+              <q-item-section>
+                <q-item-label>{{task.title}}</q-item-label>
+                <q-item-label caption>
+                  Minha descrição que ainda não existe
+                </q-item-label>
+              </q-item-section>
+            </q-item>
+          </div>
+        </div>
+      </q-card-section>
+
+    </q-card>
+  </q-dialog>
 </template>
 <script setup>
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 
 const isProjectModalOpen = ref(false);
-const openProject = reactive({
-  title:''
-})
+
 
 defineProps({
   project:{
     title:String,
     tasks:[{
       title:String,
-      isDone:Boolean,
+      done:Boolean,
       id:Number,
     }]
   }
 })
-function openProjectModal(project){
-   openProject.title = project.title
-   isProjectModalOpen.value = true
+function openProjectModal() {
+  isProjectModalOpen.value = true;
 }
 </script>
 <style scoped>

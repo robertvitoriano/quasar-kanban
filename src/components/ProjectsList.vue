@@ -1,6 +1,6 @@
 <template>
   <div class="column-wrapper">
-    <span class="list-title">{{listTitle}}</span>
+    <span class="list-title">{{title}}</span>
   <div class="column-container">
     <div class="cards-container">
       <ProjectCard v-for="project in projects" :key="project.id" :project="project"></ProjectCard>
@@ -46,7 +46,7 @@ defineProps({
  }
  .cards-container {
   margin-top: calc(400px + 4rem);
- }
+  }
  .column-container::-webkit-scrollbar {
   width: 10px;
 }
