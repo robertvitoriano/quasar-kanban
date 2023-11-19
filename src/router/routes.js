@@ -3,18 +3,26 @@ const isLoggedInd =
 
 const routes = [
   {
-    path: "/",
-    component: () =>
-      isLoggedInd
-        ? import("layouts/MainLayout.vue")
-        : import("layouts/EmptyLayout.vue"),
+    path: "/login",
+    component: () => import("pages/LoginSignUpPage.vue"),
+  },
+  {
+    path: "/home",
+    component: () => import("layouts/MainLayout.vue"),
     children: [
       {
         path: "",
-        component: () =>
-          isLoggedInd
-            ? import("pages/HomePage.vue")
-            : import("pages/LoginSignUpPage.vue"),
+        component: () => import("pages/HomePage.vue"),
+      },
+    ],
+  },
+  {
+    path: "/",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/HomePage.vue"),
       },
     ],
   },
