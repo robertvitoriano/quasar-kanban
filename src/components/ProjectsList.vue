@@ -24,9 +24,9 @@ defineProps(['projects', 'title']);
   justify-content: space-evenly;
   padding-left: 1rem;
   padding-right: 1rem;
-  min-height: 400px;
-  max-height: 800px;
+  min-height: 600px;
   overflow-y:auto ;
+  position: relative;
  }
  .column-wrapper {
   background-color: black;
@@ -44,7 +44,8 @@ defineProps(['projects', 'title']);
   margin-bottom: 2rem;
  }
  .cards-container {
-  margin-top: calc(400px + 4rem);
+  position: absolute;
+  top:0;
   }
  .column-container::-webkit-scrollbar {
   width: 10px;
