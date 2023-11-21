@@ -1,3 +1,4 @@
+const isLoggedIn = !!localStorage.getItem("token");
 const routes = [
   {
     path: "/login",
@@ -15,11 +16,17 @@ const routes = [
   },
   {
     path: "/",
-    component: () => import("layouts/MainLayout.vue"),
+    component: () =>
+      isLoggedIn
+        ? import("layouts/MainLayout.vue")
+        : import("layouts/EmptyLayout.vue"),
     children: [
       {
         path: "",
-        component: () => import("pages/HomePage.vue"),
+        component: () =>
+          isLoggedIn
+            ? import("pages/HomePage.vue")
+            : import("pages/LoginSignUpPage.vue"),
       },
     ],
   },

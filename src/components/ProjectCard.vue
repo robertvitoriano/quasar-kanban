@@ -51,7 +51,7 @@ function openProjectModal() {
 background-color: rgb(190, 190, 190);
 margin-bottom: 1rem;
 width: 400px;
-height: 400px;
+height: 40vh;
 }
 .card-container:hover {
   cursor: pointer;

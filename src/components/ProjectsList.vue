@@ -24,12 +24,13 @@ defineProps(['projects', 'title']);
   justify-content: space-evenly;
   padding-left: 1rem;
   padding-right: 1rem;
-  min-height: 600px;
+  min-height: 60vh;
   overflow-y:auto ;
   position: relative;
  }
  .column-wrapper {
   background-color: black;
+  margin-top: 1rem;
 
  }
  .list-title{
