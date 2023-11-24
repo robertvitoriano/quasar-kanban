@@ -1,39 +1,47 @@
 <template>
   <div class="column-wrapper">
-    <span class="list-title">{{title}}</span>
-  <div class="column-container">
-    <div class="cards-container">
-      <ProjectCard v-for="project in projects" :key="project.id" :project="project"></ProjectCard>
+    <span class="list-title">{{ title }}</span>
+    <div class="column-container">
+      <div class="cards-container">
+        <ProjectCard
+          v-for="project in projects"
+          :key="project.id"
+          :project="project"
+        ></ProjectCard>
+      </div>
     </div>
   </div>
-</div>
 </template>
 
 <script setup>
-import {  defineProps } from 'vue';
-import ProjectCard from 'src/components/ProjectCard.vue';
+import { defineProps } from "vue";
+import ProjectCard from "src/components/ProjectCard.vue";
 
-defineProps(['projects', 'title']);
-
+defineProps(["projects", "title"]);
 </script>
 <style scoped>
- .column-container{
-  height: fit-content ;
+.column-container {
+  height: fit-content;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   padding-left: 1rem;
   padding-right: 1rem;
-  min-height: 60vh;
-  overflow-y:auto ;
+  min-height: 30vh;
+  max-height: 50vh;
+  overflow-y: auto;
   position: relative;
- }
- .column-wrapper {
+}
+.cards-container{
+  max-height: 50vh;
+  min-height: 30vh;
+}
+.column-wrapper {
   background-color: black;
   margin-top: 1rem;
-
- }
- .list-title{
+  padding-bottom: 1rem;
+}
+.list-title {
   text-align: center;
   width: 100%;
   color: white;
@@ -43,12 +51,9 @@ defineProps(['projects', 'title']);
   align-items: center;
   margin-top: 2rem;
   margin-bottom: 2rem;
- }
- .cards-container {
-  position: absolute;
-  top:0;
-  }
- .column-container::-webkit-scrollbar {
+}
+
+.column-container::-webkit-scrollbar {
   width: 10px;
 }
 
