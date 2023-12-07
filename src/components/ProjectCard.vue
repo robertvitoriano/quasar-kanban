@@ -22,7 +22,6 @@
           </div>
         </div>
       </q-card-section>
-
     </q-card>
   </q-dialog>
 </template>

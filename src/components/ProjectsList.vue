@@ -1,5 +1,5 @@
 <template>
-  <div class="column-wrapper">
+  <div class="column-wrapper" :key="id">
     <span class="list-title">{{ title }}</span>
     <div class="column-container">
       <div class="cards-container">
@@ -10,14 +10,58 @@
         ></ProjectCard>
       </div>
     </div>
+    <AddButton class="add-button" @click="toggleProjectCreationModal" />
   </div>
+  <q-dialog v-model="isProjectCreationModalOpen">
+    <q-card class="project-modal">
+      <q-card-section class="project-modal-container">
+        <div class="project-modal-content">
+          <q-form @submit="createNewProject(id)" color="dark">
+            <q-input
+              filled
+              v-model="newProjectTitle"
+              label="Title of the new project"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Enter the title of the project',
+              ]"
+              color="dark"
+            />
+
+            <div class="form-modal-buttons">
+              <q-btn label="Create Project" type="submit" color="dark" />
+            </div>
+          </q-form>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
+import AddButton from "src/components/AddButton.vue";
+import { api } from "boot/axios";
 
-defineProps(["projects", "title"]);
+const { reloadBoard } = defineProps(["projects", "title", "id", "reloadBoard"]);
+
+const isProjectCreationModalOpen = ref(null);
+const newProjectTitle = ref(null);
+
+async function createNewProject(id) {
+  await api.post("/projects", {
+    title: newProjectTitle.value,
+    project_list_id: id,
+  });
+  reloadBoard();
+  toggleProjectCreationModal()
+}
+
+function toggleProjectCreationModal() {
+  isProjectCreationModalOpen.value = !isProjectCreationModalOpen.value;
+}
 </script>
 <style scoped>
 .column-container {
@@ -32,14 +76,16 @@ defineProps(["projects", "title"]);
   overflow-y: auto;
   position: relative;
 }
-.cards-container{
-  max-height: 50vh;
-  min-height: 30vh;
+.cards-container {
+  height: 50vh;
 }
 .column-wrapper {
   background-color: black;
   margin-top: 1rem;
   padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .list-title {
   text-align: center;
@@ -69,5 +115,12 @@ defineProps(["projects", "title"]);
 
 .column-container::-webkit-scrollbar-thumb:hover {
   opacity: 30%;
+}
+.add-button {
+  margin-top: 1rem;
+}
+.form-modal-buttons {
+  display: flex;
+  justify-content: center;
 }
 </style>

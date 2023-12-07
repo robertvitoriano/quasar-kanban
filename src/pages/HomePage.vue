@@ -6,6 +6,8 @@
         :projects="projectList.projects"
         :key="projectList.id"
         :title="projectList.title"
+        :id="projectList.id"
+        :reloadBoard="reloadBoard"
       ></ProjectsList>
     </div>
   </q-page>
@@ -16,14 +18,17 @@ import ProjectsList from "src/components/ProjectsList.vue";
 import { onMounted, ref } from "vue";
 import { api } from "boot/axios";
 
-onMounted(async()=>{
-  const projectsResponse = await api.get('/boards/1')
-  projectLists.value = projectsResponse.data.data.project_lists
+onMounted(async () => {
+  await loadBoard();
+});
 
-})
-const projectLists= ref([])
+const reloadBoard = ref(async () => await loadBoard());
 
-
+async function loadBoard() {
+  const projectsResponse = await api.get("/boards/1");
+  projectLists.value = projectsResponse.data.data.project_lists;
+}
+const projectLists = ref([]);
 </script>
 <style scoped>
 .projects-list-container {
