@@ -36,7 +36,7 @@
           label="Password confirmation"
           hint="Password confirmation *"
           :rules="[
-            (val) => (val && val === password.value) || `passwords don't match`,
+            (val) => (val && val === password) || `passwords don't match`,
           ]"
           v-if="!isLogin"
         />
@@ -103,6 +103,7 @@ async function handleSignUp() {
       email: email.value,
       password: password.value,
       password_confirmation: passwordConfirmation.value,
+      name: name.value
     });
     console.log({ response });
   } catch (error) {
