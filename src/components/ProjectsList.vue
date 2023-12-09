@@ -7,6 +7,7 @@
           v-for="project in projects"
           :key="project.id"
           :project="project"
+          :reloadBoard="reloadBoard"
         ></ProjectCard>
       </div>
     </div>
@@ -28,7 +29,7 @@
               ]"
               color="dark"
             />
-
+            reloadBoard
             <div class="form-modal-buttons">
               <q-btn label="Create Project" type="submit" color="dark" />
             </div>

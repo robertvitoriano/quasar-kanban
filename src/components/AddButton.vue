@@ -22,5 +22,6 @@
   cursor: pointer;
   color: black;
   background-color: white;
+  border: solid black 2px;
 }
 </style>
