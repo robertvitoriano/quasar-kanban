@@ -29,7 +29,6 @@
               ]"
               color="dark"
             />
-            reloadBoard
             <div class="form-modal-buttons">
               <q-btn label="Create Project" type="submit" color="dark" />
             </div>
