@@ -22,29 +22,54 @@
               v-ripple
             >
               <q-item-section side top>
-                <q-checkbox v-model="task.done" color="dark" />
+                <q-checkbox
+                  v-model="task.done"
+                  color="dark"
+                  @click="updateTaskDoneState(task)"
+                  class="task-item-checkbox"
+                />
               </q-item-section>
-              <q-item-section>
-                <q-item-label>{{ task.title }}</q-item-label>
-                <q-item-label caption>
-                  {{ task.description }}
-                </q-item-label>
-              </q-item-section>
+              <div class="task-item-content">
+                <q-item-section>
+                  <q-item-label>{{ task.title }}</q-item-label>
+                  <q-item-label caption>
+                    {{ task.description }}
+                  </q-item-label>
+                </q-item-section>
+              </div>
+              <div class="task-item-buttons">
+                <q-item-section>
+                  <q-icon
+                    name="delete"
+                    color="red"
+                    size="1.5rem"
+                    @click="handleDeleteTaskButtonClick(task.id)"
+                  />
+                </q-item-section>
+                <q-item-section>
+                  <q-icon
+                    name="edit"
+                    color="dark"
+                    size="1.5rem"
+                    @click="handleUpdateTaskButtonClick(task)"
+                  />
+                </q-item-section>
+              </div>
             </q-item>
           </div>
-          <AddButton @click="toggleCreateNewTaskModal" />
+          <AddButton @click="handleAddTaskButtonClick" />
         </div>
       </q-card-section>
     </q-card>
   </q-dialog>
-  <q-dialog v-model="isTaskCreationModalOpen">
-    <q-card class="task-creation-modal">
-      <q-card-section class="task-creation-modal-container">
-        <div class="task-creation-modal-content">
-          <q-form  color="dark">
+  <q-dialog v-model="isTaskCreateUpdateModalOpen">
+    <q-card class="task-create-update-modal">
+      <q-card-section class="task-create-update-modal-container">
+        <div class="task-create-update-modal-content">
+          <q-form color="dark" v-if="isCreatingTask">
             <q-input
               filled
-              v-model="newTaskTitle"
+              v-model="taskInputTitle"
               label="Title of the new task"
               lazy-rules
               :rules="[
@@ -55,8 +80,8 @@
             />
             <q-input
               filled
-              v-model="newTaskDescription"
-              label="Description of the new task"
+              v-model="taskInputDescription"
+              label="Description of the task"
               lazy-rules
               :rules="[
                 (val) =>
@@ -67,23 +92,80 @@
               type=""
             />
             <div class="form-modal-buttons">
-              <q-btn label="Create Task"  @click="createNewTask" color="dark" />
+              <q-btn label="Create Task" @click="createNewTask" color="dark" />
+            </div>
+          </q-form>
+          <q-form color="dark" v-if="isUpdatingTask">
+            <q-input
+              filled
+              v-model="taskBeingEdited.title"
+              label="Title of the new task"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Enter the title of the task',
+              ]"
+              color="dark"
+            />
+            <q-input
+              filled
+              v-model="taskBeingEdited.description"
+              label="Description of the new task"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) ||
+                  'Enter the Description of the task',
+              ]"
+              color="dark"
+              type=""
+            />
+            <div class="form-modal-buttons" v-if="isCreatingTask">
+              <q-btn label="Create Task" @click="createNewTask" color="dark" />
+            </div>
+            <div class="form-modal-buttons" v-else-if="isUpdatingTask">
+              <q-btn label="Update Task" @click="updateTask" color="dark" />
             </div>
           </q-form>
         </div>
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="isTaskDeleteConfirmationModalOpen">
+    <q-card class="task-delete-confirmation-modal">
+      <q-card-section class="task-delete-confirmation-modal-container">
+        <div class="task-delete-confirmation-modal-content">
+          <span class="task-delete-warning">
+            Are you sure you want to delete this task ?
+          </span>
+          <div class="delete-confirmation-buttons">
+            <q-btn label="No" @click="toggleDeleteTaskModal" color="red" />
+            <q-btn label="Yes" @click="deleteTask()" color="green" />
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
 
 const isProjectModalOpen = ref(false);
-const isTaskCreationModalOpen = ref(false);
-const newTaskTitle = ref("");
-const newTaskDescription = ref("");
+const isTaskCreateUpdateModalOpen = ref(false);
+const taskInputTitle = ref("");
+const taskInputDescription = ref("");
+const isCreatingTask = ref(false);
+const isUpdatingTask = ref(false);
+const isTaskDeleteConfirmationModalOpen = ref(false);
+const taskToDeleteId = ref(null);
+
+let taskBeingEdited = reactive({
+  id: null,
+  title: "",
+  description: "",
+});
 
 const { project, reloadBoard } = defineProps({
   project: {
@@ -104,18 +186,64 @@ function openProjectModal() {
 }
 async function createNewTask() {
   await api.post("/tasks", {
-    title: newTaskTitle.value,
-    description: newTaskDescription.value,
+    title: taskInputTitle.value,
+    description: taskInputDescription.value,
     project_id: project.id,
   });
-  toggleCreateNewTaskModal();
+  toggleCreateUpdateTaskModal();
   reloadBoard();
-  newTaskTitle.value = '';
-  newTaskDescription.value = '';
+  taskInputTitle.value = "";
+  taskInputDescription.value = "";
+  isCreatingTask.value = false;
+}
+async function updateTask() {
+  await api.patch(`/tasks/${taskBeingEdited.id}`, {
+    title: taskBeingEdited.title,
+    description: taskBeingEdited.description,
+  });
+
+  toggleCreateUpdateTaskModal();
+  reloadBoard();
+  taskBeingEdited = { title: "", description: "", id: null };
+  isUpdatingTask.value = false;
+}
+async function updateTaskDoneState(task) {
+  await api.patch(`/tasks/${task.id}`, {
+    is_done: task.done,
+  });
+  reloadBoard();
 }
 
-function toggleCreateNewTaskModal() {
-  isTaskCreationModalOpen.value = !isTaskCreationModalOpen.value;
+async function deleteTask() {
+  await api.delete(`/tasks/${taskToDeleteId.value}`);
+  toggleDeleteTaskModal();
+  reloadBoard();
+}
+
+function toggleCreateUpdateTaskModal() {
+  isTaskCreateUpdateModalOpen.value = !isTaskCreateUpdateModalOpen.value;
+}
+
+function toggleDeleteTaskModal() {
+  isTaskDeleteConfirmationModalOpen.value =
+    !isTaskDeleteConfirmationModalOpen.value;
+}
+
+function handleDeleteTaskButtonClick(taskId) {
+  taskToDeleteId.value = taskId;
+  toggleDeleteTaskModal();
+}
+
+function handleAddTaskButtonClick() {
+  toggleCreateUpdateTaskModal();
+  isCreatingTask.value = true;
+}
+
+function handleUpdateTaskButtonClick(taskToEdit) {
+  console.log(taskToEdit);
+  taskBeingEdited = taskToEdit;
+  isUpdatingTask.value = true;
+  toggleCreateUpdateTaskModal();
 }
 </script>
 <style scoped>
@@ -149,12 +277,27 @@ function toggleCreateNewTaskModal() {
   justify-content: flex-start;
   flex-direction: column;
 }
+.task-item-content {
+  width: 80%;
+}
 .no-tasks-warn {
   margin-bottom: 1rem;
 }
 .tasks-label {
   width: 100%;
   text-align: left;
+}
+.task-item-checkbox {
+  width: fit-content;
+}
+
+.task-delete-warning {
+  margin-bottom: 1rem;
+}
+.task-delete-confirmation-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 @media (min-width: 600px) {
   .project-modal-content {
