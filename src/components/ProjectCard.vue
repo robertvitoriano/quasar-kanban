@@ -299,6 +299,11 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   flex-direction: column;
   align-items: center;
 }
+.delete-confirmation-buttons {
+  display: flex;
+  width: 10rem;
+  justify-content: space-evenly;
+}
 @media (min-width: 600px) {
   .project-modal-content {
     width: 510px;

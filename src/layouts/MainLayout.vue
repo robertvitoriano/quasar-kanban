@@ -5,24 +5,24 @@
         <div class="bar-content">
           <span>Quasar Projects</span>
           <div class="q-pa-md q-gutter-sm">
-              <q-btn class="avatar">
-                <q-menu class="dropdown-menu">
-                  <div class="column items-center ">
-                    <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
-                    <q-avatar size="40px" class="avatar-dropdown">
-                      <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
-                    </q-avatar>
-                    <q-btn
-                      color="primary"
-                      label="Logout"
-                      push
-                      size="sm"
-                      v-close-popup
-                      @click="handleLogout"
-                    />
-                  </div>
-                </q-menu>
-              </q-btn>
+            <q-btn class="avatar">
+              <q-menu class="dropdown-menu">
+                <div class="column items-center dropdown-menu-content">
+                  <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
+                  <q-avatar size="40px" class="avatar-dropdown">
+                    <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
+                  </q-avatar>
+                  <q-btn
+                    color="primary"
+                    label="Logout"
+                    push
+                    size="sm"
+                    v-close-popup
+                    @click="handleLogout"
+                  />
+                </div>
+              </q-menu>
+            </q-btn>
           </div>
         </div>
       </q-bar>
@@ -42,7 +42,7 @@ const router = useRouter();
 function handleLogout() {
   localStorage.clear();
   authStore.setToken("");
-  location.reload()
+  router.push('/')
 }
 </script>
 
@@ -84,5 +84,8 @@ function handleLogout() {
 .avatar-dropdown {
   margin-bottom: 1rem;
 }
-.dropdown-menu{}
+.dropdown-menu-content{
+  width: 8rem;
+  height: 10rem;
+}
 </style>

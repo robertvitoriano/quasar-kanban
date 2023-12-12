@@ -91,6 +91,7 @@ async function handleLogin() {
       password: password.value,
     });
     authStore.setToken("Bearer " + response.data.access_token);
+    authStore.setLevel()
     router.push("/home");
   } catch (error) {
     console.error("Login failed:", error);
