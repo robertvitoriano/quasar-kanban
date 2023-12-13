@@ -92,7 +92,7 @@ async function handleLogin() {
     });
     authStore.setToken("Bearer " + response.data.access_token);
     authStore.setLevel()
-    router.push("/home");
+    router.push("/boards-selection");
   } catch (error) {
     console.error("Login failed:", error);
   }

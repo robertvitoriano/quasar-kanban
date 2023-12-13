@@ -15,6 +15,16 @@ const routes = [
     ],
   },
   {
+    path: "/boards-selection",
+    component: () => import("layouts/MainLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () => import("pages/BoardsSelection.vue"),
+      },
+    ],
+  },
+  {
     path: "/",
     component: () =>
       isLoggedIn
