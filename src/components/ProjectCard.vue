@@ -1,5 +1,11 @@
 <template>
-  <div class="card-container" @click="openProjectModal(project)">
+  <div
+    class="card-container"
+    draggable="true"
+    @dragstart="handleDragStart"
+    @dragend="handleDragEnd"
+    @click="openProjectModal(project)"
+  >
     <span class="project-title">{{ project.title }}</span>
   </div>
   <q-dialog v-model="isProjectModalOpen">
@@ -219,7 +225,13 @@ async function deleteTask() {
   toggleDeleteTaskModal();
   reloadBoard();
 }
+const handleDragStart = (event) => {
+  event.dataTransfer.setData("text/plain", project.id);
+};
 
+const handleDragEnd = () => {
+  // TODO: IMPLEMENT DRAG END IF NEEDED
+};
 function toggleCreateUpdateTaskModal() {
   isTaskCreateUpdateModalOpen.value = !isTaskCreateUpdateModalOpen.value;
 }

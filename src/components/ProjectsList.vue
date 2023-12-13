@@ -1,8 +1,12 @@
 <template>
-  <div class="column-wrapper" :key="id">
+  <div
+    class="column-wrapper"
+    @dragover.prevent="handleDragOver"
+    @drop="handleDrop"
+  >
     <span class="list-title">{{ title }}</span>
     <div class="column-container">
-      <div class="cards-container">
+      <div class="cards-container" dropzone="true">
         <ProjectCard
           v-for="project in projects"
           :key="project.id"
@@ -45,10 +49,11 @@ import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
 
-const { reloadBoard } = defineProps(["projects", "title", "id", "reloadBoard"]);
+const { reloadBoard, id } = defineProps(["projects", "title", "id", "reloadBoard"]);
 
 const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
+const oneCardIsBeingHovered = ref(false);
 
 async function createNewProject(id) {
   await api.post("/projects", {
@@ -56,12 +61,45 @@ async function createNewProject(id) {
     project_list_id: id,
   });
   reloadBoard();
-  toggleProjectCreationModal()
+  toggleProjectCreationModal();
 }
 
 function toggleProjectCreationModal() {
   isProjectCreationModalOpen.value = !isProjectCreationModalOpen.value;
 }
+const handleDragOver = (event) => {
+  event.preventDefault();
+  const elementBeingHoveredIsCard =
+    event.target.classList.contains("card-container");
+  if (elementBeingHoveredIsCard) {
+    const clonedCard = event.target.cloneNode();
+    if (clonedCard && !oneCardIsBeingHovered.value) {
+      clonedCard.style.backgroundColor = "black";
+      clonedCard.innerHTML = "";
+      clonedCard.style.border = "dotted white 3px";
+      const parentElement = event.target.parentNode;
+      parentElement.insertBefore(clonedCard, event.target);
+      oneCardIsBeingHovered.value = true;
+    }
+  }
+};
+
+const handleDrop = async (event) => {
+  event.preventDefault();
+  const draggedCardId = event.dataTransfer.getData("text/plain");
+  oneCardIsBeingHovered.value = false;
+  event.target.remove();
+  const projectListId = id;
+  await moveCard(draggedCardId, projectListId);
+  reloadBoard();
+};
+
+const moveCard = async (cardId, targetProjectListId) => {
+  console.log({targetProjectListId})
+  await api.patch(`/projects/${cardId}`, {
+    project_list_id: targetProjectListId,
+  });
+};
 </script>
 <style scoped>
 .column-container {
