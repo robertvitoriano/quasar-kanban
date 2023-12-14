@@ -10,29 +10,68 @@
         :reloadBoard="reloadBoard"
       ></ProjectsList>
     </div>
+    <AddButton class="add-button" @click="toggleProjectListModal" />
   </q-page>
+  <q-dialog v-model="isProjectListModalOpen">
+    <q-card class="board-creation-modal">
+      <q-card-section class="board-creation-modal-container">
+        <div class="board-creation-modal-content">
+          <q-form @submit="createProjectList" color="dark">
+            <q-input
+              filled
+              v-model="newProjectListTitle"
+              label="Title of the new list"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Enter the title of the list',
+              ]"
+              color="dark"
+            />
+            <div class="form-modal-buttons">
+              <q-btn label="Create List" type="submit" color="dark" />
+            </div>
+          </q-form>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
 import ProjectsList from "src/components/ProjectsList.vue";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
 import { useBoardStore } from "./../stores/board";
+import AddButton from "components/AddButton.vue";
 
 import { api } from "boot/axios";
 
 onMounted(async () => {
   await loadBoard();
 });
-const route = useRoute();
+
 const boardStore = useBoardStore();
 const reloadBoard = ref(async () => await loadBoard());
 const projectLists = ref([]);
+const isProjectListModalOpen = ref(false);
+const newProjectListTitle = ref("");
+const boardId = boardStore.getBoardId;
 
 async function loadBoard() {
-  const boardId = boardStore.getBoardId;
   const projectsResponse = await api.get(`/boards/${boardId}`);
   projectLists.value = projectsResponse.data.data.project_lists;
+}
+function toggleProjectListModal() {
+  isProjectListModalOpen.value = !isProjectListModalOpen.value;
+}
+async function createProjectList() {
+  await api.post("/project-lists", {
+    title: newProjectListTitle.value,
+    board_id: boardId,
+  });
+  newProjectListTitle.value = "";
+  await loadBoard();
+  toggleProjectListModal();
 }
 </script>
 <style scoped>
@@ -41,5 +80,15 @@ async function loadBoard() {
   flex-direction: row;
   justify-content: space-evenly;
   margin-top: 1rem;
+}
+.add-button {
+  position: absolute;
+  bottom: 3rem;
+  right: 3rem;
+}
+.form-modal-buttons {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 </style>

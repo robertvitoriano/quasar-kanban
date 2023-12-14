@@ -1,7 +1,9 @@
 <template>
   <q-page class="wrapper">
     <div class="boards-container">
-      <q-card class="board-card" v-for="board in boards" :key="board.id">
+      <q-spinner v-if="$q.loading.isActive" :size="100" color="primary" />
+
+      <q-card class="board-card" v-else v-for="board in boards" :key="board.id">
         <q-card-section
           class="board-card-container"
           @click="navigateToBoard(board.id)"
@@ -73,12 +75,18 @@ import { useRouter } from "vue-router";
 import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
 import { useBoardStore } from "./../stores/board";
+import { useQuasar } from "quasar";
 
 onMounted(async () => {
+  $q.loading.show({
+    delay: 400,
+  });
   await loadBoards();
+  $q.loading.hide();
 });
 const router = useRouter();
 const boardStore = useBoardStore();
+const $q = useQuasar();
 
 let boards = reactive([]);
 const newBoardTitle = ref("");
@@ -93,7 +101,7 @@ async function loadBoards() {
 
 function navigateToBoard(selectedBoardId) {
   boardStore.setBoardId(selectedBoardId);
-  router.push('/home');
+  router.push("/home");
 }
 
 async function createBoard() {

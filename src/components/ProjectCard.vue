@@ -4,9 +4,17 @@
     draggable="true"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
-    @click="openProjectModal(project)"
   >
-    <span class="project-title">{{ project.title }}</span>
+    <q-icon
+      name="delete"
+      color="red"
+      size="1.5rem"
+      @click="toggleDeleteProjectModal"
+      class="delete-icon delete-project-icon"
+    />
+    <span class="project-title" @click="openProjectModal(project)">{{
+      project.title
+    }}</span>
   </div>
   <q-dialog v-model="isProjectModalOpen">
     <q-card class="project-modal">
@@ -50,6 +58,7 @@
                     color="red"
                     size="1.5rem"
                     @click="handleDeleteTaskButtonClick(task.id)"
+                    class="delete-icon"
                   />
                 </q-item-section>
                 <q-item-section>
@@ -139,14 +148,29 @@
   </q-dialog>
   <q-dialog v-model="isTaskDeleteConfirmationModalOpen">
     <q-card class="task-delete-confirmation-modal">
-      <q-card-section class="task-delete-confirmation-modal-container">
-        <div class="task-delete-confirmation-modal-content">
-          <span class="task-delete-warning">
+      <q-card-section class="delete-confirmation-modal-container">
+        <div class="delete-confirmation-modal-content">
+          <span class="delete-warning">
             Are you sure you want to delete this task ?
           </span>
           <div class="delete-confirmation-buttons">
             <q-btn label="No" @click="toggleDeleteTaskModal" color="red" />
             <q-btn label="Yes" @click="deleteTask()" color="green" />
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="isProjectDeleteConfirmationModalOpen">
+    <q-card class="project-delete-confirmation-modal">
+      <q-card-section class="delete-confirmation-modal-container">
+        <div class="delete-confirmation-modal-content">
+          <span class="delete-warning">
+            Are you sure you want to delete this project ?
+          </span>
+          <div class="delete-confirmation-buttons">
+            <q-btn label="No" @click="toggleDeleteProjectModal" color="red" />
+            <q-btn label="Yes" @click="deleteProject()" color="green" />
           </div>
         </div>
       </q-card-section>
@@ -166,6 +190,7 @@ const isCreatingTask = ref(false);
 const isUpdatingTask = ref(false);
 const isTaskDeleteConfirmationModalOpen = ref(false);
 const taskToDeleteId = ref(null);
+const isProjectDeleteConfirmationModalOpen = ref(null);
 
 let taskBeingEdited = reactive({
   id: null,
@@ -176,6 +201,8 @@ let taskBeingEdited = reactive({
 const { project, reloadBoard } = defineProps({
   project: {
     title: String,
+    id: Number,
+    order: Number,
     tasks: [
       {
         title: String,
@@ -225,6 +252,11 @@ async function deleteTask() {
   toggleDeleteTaskModal();
   reloadBoard();
 }
+async function deleteProject() {
+  await api.delete(`/projects/${project.id}`);
+  toggleDeleteProjectModal();
+  reloadBoard();
+}
 const handleDragStart = (event) => {
   event.dataTransfer.setData("text/plain", project.id);
 };
@@ -240,7 +272,10 @@ function toggleDeleteTaskModal() {
   isTaskDeleteConfirmationModalOpen.value =
     !isTaskDeleteConfirmationModalOpen.value;
 }
-
+function toggleDeleteProjectModal() {
+  isProjectDeleteConfirmationModalOpen.value =
+    !isProjectDeleteConfirmationModalOpen.value;
+}
 function handleDeleteTaskButtonClick(taskId) {
   taskToDeleteId.value = taskId;
   toggleDeleteTaskModal();
@@ -264,17 +299,23 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   margin-bottom: 1rem;
   width: 400px;
   height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
 }
-.card-container:hover {
-  cursor: pointer;
-}
+
 .project-title {
   display: inline-block;
-  width: 100%;
   text-align: center;
   font-weight: bold;
-  text-decoration: underline;
   font-size: 2rem;
+  width: fit-content;
+  height: fit-content;
+}
+.project-title:hover {
+  text-decoration: underline;
+  cursor: pointer;
 }
 .project-modal-content {
   width: 400px;
@@ -303,10 +344,10 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   width: fit-content;
 }
 
-.task-delete-warning {
+.delete-warning {
   margin-bottom: 1rem;
 }
-.task-delete-confirmation-modal-content {
+.delete-confirmation-modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -315,6 +356,18 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   display: flex;
   width: 10rem;
   justify-content: space-evenly;
+}
+.delete-icon{
+  width: fit-content;
+  height: fit-content;
+}
+.delete-project-icon{
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+.delete-icon:hover{
+  cursor: pointer;
 }
 @media (min-width: 600px) {
   .project-modal-content {

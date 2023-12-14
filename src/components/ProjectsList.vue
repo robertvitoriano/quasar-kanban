@@ -4,6 +4,13 @@
     @dragover.prevent="handleDragOver"
     @drop="handleDrop"
   >
+    <q-icon
+      name="delete"
+      color="red"
+      size="1.5rem"
+      @click="toggleDeleteProjectListModal()"
+      class="delete-project-list-icon"
+    />
     <span class="list-title">{{ title }}</span>
     <div class="column-container">
       <div class="cards-container" dropzone="true">
@@ -41,6 +48,21 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="isProjectListDeleteConfirmationModalOpen">
+    <q-card class="delete-confirmation-modal">
+      <q-card-section class="delete-confirmation-modal-container">
+        <div class="delete-confirmation-modal-content">
+          <span class="delete-warning">
+            Are you sure you want to delete this list ?
+          </span>
+          <div class="delete-confirmation-buttons">
+            <q-btn label="No" @click="toggleDeleteProjectListModal" color="red" />
+            <q-btn label="Yes" @click="deleteProjectList()" color="green" />
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
@@ -49,11 +71,17 @@ import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
 
-const { reloadBoard, id } = defineProps(["projects", "title", "id", "reloadBoard"]);
+const { reloadBoard, id:projectListId } = defineProps([
+  "projects",
+  "title",
+  "id",
+  "reloadBoard",
+]);
 
 const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
 const oneCardIsBeingHovered = ref(false);
+const isProjectListDeleteConfirmationModalOpen = ref(false);
 
 async function createNewProject(id) {
   await api.post("/projects", {
@@ -66,6 +94,14 @@ async function createNewProject(id) {
 
 function toggleProjectCreationModal() {
   isProjectCreationModalOpen.value = !isProjectCreationModalOpen.value;
+}
+function toggleDeleteProjectListModal(){
+  isProjectListDeleteConfirmationModalOpen.value = !isProjectListDeleteConfirmationModalOpen.value
+}
+
+async function deleteProjectList(){
+  await api.delete(`/project-lists/${projectListId}`);
+  reloadBoard();
 }
 const handleDragOver = (event) => {
   event.preventDefault();
@@ -89,13 +125,11 @@ const handleDrop = async (event) => {
   const draggedCardId = event.dataTransfer.getData("text/plain");
   oneCardIsBeingHovered.value = false;
   event.target.remove();
-  const projectListId = id;
   await moveCard(draggedCardId, projectListId);
   reloadBoard();
 };
 
 const moveCard = async (cardId, targetProjectListId) => {
-  console.log({targetProjectListId})
   await api.patch(`/projects/${cardId}`, {
     project_list_id: targetProjectListId,
   });
@@ -113,6 +147,7 @@ const moveCard = async (cardId, targetProjectListId) => {
   max-height: 50vh;
   overflow-y: auto;
   position: relative;
+  width: 450px;
 }
 .cards-container {
   height: 50vh;
@@ -124,6 +159,7 @@ const moveCard = async (cardId, targetProjectListId) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
 }
 .list-title {
   text-align: center;
@@ -160,5 +196,26 @@ const moveCard = async (cardId, targetProjectListId) => {
 .form-modal-buttons {
   display: flex;
   justify-content: center;
+}
+.delete-project-list-icon{
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+.delete-project-list-icon:hover{
+  cursor: pointer;
+}
+.delete-confirmation-buttons {
+  display: flex;
+  width: 10rem;
+  justify-content: space-evenly;
+}
+.delete-warning {
+  margin-bottom: 1rem;
+}
+.delete-confirmation-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>
