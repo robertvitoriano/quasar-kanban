@@ -16,19 +16,24 @@
 <script setup>
 import ProjectsList from "src/components/ProjectsList.vue";
 import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+import { useBoardStore } from "./../stores/board";
+
 import { api } from "boot/axios";
 
 onMounted(async () => {
   await loadBoard();
 });
-
+const route = useRoute();
+const boardStore = useBoardStore();
 const reloadBoard = ref(async () => await loadBoard());
+const projectLists = ref([]);
 
 async function loadBoard() {
-  const projectsResponse = await api.get("/boards/1");
+  const boardId = boardStore.getBoardId;
+  const projectsResponse = await api.get(`/boards/${boardId}`);
   projectLists.value = projectsResponse.data.data.project_lists;
 }
-const projectLists = ref([]);
 </script>
 <style scoped>
 .projects-list-container {
