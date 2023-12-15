@@ -56,7 +56,11 @@
             Are you sure you want to delete this list ?
           </span>
           <div class="delete-confirmation-buttons">
-            <q-btn label="No" @click="toggleDeleteProjectListModal" color="red" />
+            <q-btn
+              label="No"
+              @click="toggleDeleteProjectListModal"
+              color="red"
+            />
             <q-btn label="Yes" @click="deleteProjectList()" color="green" />
           </div>
         </div>
@@ -71,7 +75,7 @@ import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
 
-const { reloadBoard, id:projectListId } = defineProps([
+const { reloadBoard, id: projectListId } = defineProps([
   "projects",
   "title",
   "id",
@@ -95,11 +99,12 @@ async function createNewProject(id) {
 function toggleProjectCreationModal() {
   isProjectCreationModalOpen.value = !isProjectCreationModalOpen.value;
 }
-function toggleDeleteProjectListModal(){
-  isProjectListDeleteConfirmationModalOpen.value = !isProjectListDeleteConfirmationModalOpen.value
+function toggleDeleteProjectListModal() {
+  isProjectListDeleteConfirmationModalOpen.value =
+    !isProjectListDeleteConfirmationModalOpen.value;
 }
 
-async function deleteProjectList(){
+async function deleteProjectList() {
   await api.delete(`/project-lists/${projectListId}`);
   reloadBoard();
 }
@@ -107,8 +112,13 @@ const handleDragOver = (event) => {
   event.preventDefault();
   const elementBeingHoveredIsCard =
     event.target.classList.contains("card-container");
+  const elementBeingHoveredIsCardsContainer =
+    event.target.classList.contains("cards-container");
+  const elementBeingHoveredIsEmpty = event.target.innerHTML === '';
+
   if (elementBeingHoveredIsCard) {
     const clonedCard = event.target.cloneNode();
+
     if (clonedCard && !oneCardIsBeingHovered.value) {
       clonedCard.style.backgroundColor = "black";
       clonedCard.innerHTML = "";
@@ -117,6 +127,11 @@ const handleDragOver = (event) => {
       parentElement.insertBefore(clonedCard, event.target);
       oneCardIsBeingHovered.value = true;
     }
+  } else if (
+    elementBeingHoveredIsCardsContainer &&
+    elementBeingHoveredIsEmpty
+  ) {
+    event.target.style.border = "dotted white 3px";
   }
 };
 
@@ -124,7 +139,11 @@ const handleDrop = async (event) => {
   event.preventDefault();
   const draggedCardId = event.dataTransfer.getData("text/plain");
   oneCardIsBeingHovered.value = false;
-  event.target.remove();
+
+  if (event.target.classList.contains("card-container")) event.target.remove();
+
+  event.target.style.border = "none";
+
   await moveCard(draggedCardId, projectListId);
   reloadBoard();
 };
@@ -197,12 +216,12 @@ const moveCard = async (cardId, targetProjectListId) => {
   display: flex;
   justify-content: center;
 }
-.delete-project-list-icon{
+.delete-project-list-icon {
   position: absolute;
   top: 1rem;
   left: 1rem;
 }
-.delete-project-list-icon:hover{
+.delete-project-list-icon:hover {
   cursor: pointer;
 }
 .delete-confirmation-buttons {
