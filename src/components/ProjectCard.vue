@@ -1,6 +1,6 @@
 <template>
   <div
-    class="card-container"
+    :class="`card-container card-container-${cardContainerIndex}`"
     draggable="true"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
@@ -199,7 +199,7 @@ let taskBeingEdited = reactive({
   description: "",
 });
 
-const { project, reloadBoard, setProjectBeingDragged } = defineProps({
+const { project, reloadBoard, setProjectBeingDragged, cardContainerIndex } = defineProps({
   project: {
     title: String,
     id: Number,
@@ -216,6 +216,7 @@ const { project, reloadBoard, setProjectBeingDragged } = defineProps({
   },
   reloadBoard: Function,
   setProjectBeingDragged:Function,
+  cardContainerIndex:Number
 
 });
 function openProjectModal() {
@@ -263,7 +264,7 @@ async function deleteProject() {
 }
 const handleDragStart = (event) => {
   event.dataTransfer.setData("text/plain", project.id);
-  setProjectBeingDragged(project)
+  setProjectBeingDragged({...project, cardContainerIndex})
 };
 
 const handleDragEnd = () => {
@@ -292,7 +293,6 @@ function handleAddTaskButtonClick() {
 }
 
 function handleUpdateTaskButtonClick(taskToEdit) {
-  console.log(taskToEdit);
   taskBeingEdited = taskToEdit;
   isUpdatingTask.value = true;
   toggleCreateUpdateTaskModal();

@@ -15,11 +15,12 @@
     <div class="column-container">
       <div class="cards-container" dropzone="true">
         <ProjectCard
-          v-for="project in projects"
+          v-for="(project, index) in projects"
           :key="project.id"
           :project="project"
           :reloadBoard="reloadBoard"
           :setProjectBeingDragged="setProjectBeingDragged"
+          :cardContainerIndex="index+1"
         >
           ></ProjectCard
         >
