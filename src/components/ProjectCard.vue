@@ -4,6 +4,7 @@
     draggable="true"
     @dragstart="handleDragStart"
     @dragend="handleDragEnd"
+    :id="project.id"
   >
     <q-icon
       name="delete"
@@ -198,11 +199,12 @@ let taskBeingEdited = reactive({
   description: "",
 });
 
-const { project, reloadBoard } = defineProps({
+const { project, reloadBoard, setProjectBeingDragged } = defineProps({
   project: {
     title: String,
     id: Number,
     order: Number,
+    project_list_id:Number,
     tasks: [
       {
         title: String,
@@ -213,6 +215,8 @@ const { project, reloadBoard } = defineProps({
     ],
   },
   reloadBoard: Function,
+  setProjectBeingDragged:Function,
+
 });
 function openProjectModal() {
   isProjectModalOpen.value = true;
@@ -259,6 +263,7 @@ async function deleteProject() {
 }
 const handleDragStart = (event) => {
   event.dataTransfer.setData("text/plain", project.id);
+  setProjectBeingDragged(project)
 };
 
 const handleDragEnd = () => {

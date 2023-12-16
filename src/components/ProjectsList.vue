@@ -19,7 +19,10 @@
           :key="project.id"
           :project="project"
           :reloadBoard="reloadBoard"
-        ></ProjectCard>
+          :setProjectBeingDragged="setProjectBeingDragged"
+        >
+          ></ProjectCard
+        >
       </div>
     </div>
     <AddButton class="add-button" @click="toggleProjectCreationModal" />
@@ -70,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
@@ -86,6 +89,12 @@ const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
 const oneCardIsBeingHovered = ref(false);
 const isProjectListDeleteConfirmationModalOpen = ref(false);
+let projectBeingDragged = reactive({});
+const setProjectBeingDragged = ref(
+  (cardBeingDragged) => projectBeingDragged = cardBeingDragged
+);
+let projectBeingDraggedIsFromTheSameList = false;
+let isProjectBeingDraggedTheSameAsBeingHovered = false;
 
 async function createNewProject(id) {
   await api.post("/projects", {
@@ -110,13 +119,15 @@ async function deleteProjectList() {
 }
 const handleDragOver = (event) => {
   event.preventDefault();
-  const elementBeingHoveredIsCard =
-    event.target.classList.contains("card-container");
-  const elementBeingHoveredIsCardsContainer =
-    event.target.classList.contains("cards-container");
-  const elementBeingHoveredIsEmpty = event.target.innerHTML === '';
 
-  if (elementBeingHoveredIsCard) {
+  const elementBeingHoveredIsCard = event.target.classList.contains("card-container");
+  const elementBeingHoveredIsCardsContainer = event.target.classList.contains("cards-container");
+  const hoveredProjectId = Number(event.target.id);
+  const elementBeingHoveredIsEmpty = event.target.innerHTML === "";
+  projectBeingDraggedIsFromTheSameList = projectBeingDragged.project_list_id === projectListId
+  isProjectBeingDraggedTheSameAsBeingHovered = projectBeingDraggedIsFromTheSameList && hoveredProjectId === projectBeingDragged.id
+
+  if (elementBeingHoveredIsCard && !projectBeingDraggedIsFromTheSameList) {
     const clonedCard = event.target.cloneNode();
 
     if (clonedCard && !oneCardIsBeingHovered.value) {
@@ -131,7 +142,13 @@ const handleDragOver = (event) => {
     elementBeingHoveredIsCardsContainer &&
     elementBeingHoveredIsEmpty
   ) {
+
     event.target.style.border = "dotted white 3px";
+
+
+  } else if (isProjectBeingDraggedTheSameAsBeingHovered){
+
+    event.target.remove();
   }
 };
 
@@ -186,6 +203,7 @@ const moveCard = async (cardId, targetProjectListId) => {
   color: white;
   font-size: 2rem;
   display: flex;
+
   justify-content: center;
   align-items: center;
   margin-top: 2rem;
