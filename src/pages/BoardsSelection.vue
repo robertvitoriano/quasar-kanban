@@ -115,7 +115,7 @@ async function createBoard() {
   newBoardCover.value = "";
   newBoardDescription.value = "";
 
-  await loadBoards();
+  await boardStore.loadBoard();
 
   toggleBoardCreationModal();
 }

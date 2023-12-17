@@ -1,8 +1,7 @@
 <template>
   <div
     class="column-wrapper"
-    @dragover.prevent="handleDragOver"
-    @drop="handleDrop"
+
   >
     <q-icon
       name="delete"
@@ -13,14 +12,18 @@
     />
     <span class="list-title">{{ title }}</span>
     <div class="column-container">
-      <div class="cards-container" dropzone="true">
+      <div class="cards-container"
+       dropzone="true"
+       @dragover.prevent="handleDragOver"
+       @drop="handleDrop"
+       @dragleave="handleDragLeave"
+       >
         <ProjectCard
           v-for="(project, index) in projects"
           :key="project.id"
           :project="project"
-          :reloadBoard="reloadBoard"
           :setProjectBeingDragged="setProjectBeingDragged"
-          :cardContainerIndex="index+1"
+                    :cardContainerIndex="index+1"
         >
           ></ProjectCard
         >
@@ -78,14 +81,13 @@ import { reactive, ref } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
-
-const { reloadBoard, id: projectListId } = defineProps([
+import { useBoardStore } from "src/stores/board";
+const { id: projectListId } = defineProps([
   "projects",
   "title",
   "id",
-  "reloadBoard",
 ]);
-
+const boardStore = useBoardStore();
 const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
 const oneCardIsBeingHovered = ref(false);
@@ -97,12 +99,13 @@ const setProjectBeingDragged = ref(
 let projectBeingDraggedIsFromTheSameList = false;
 let isProjectBeingDraggedTheSameAsBeingHovered = false;
 
+
 async function createNewProject(id) {
   await api.post("/projects", {
     title: newProjectTitle.value,
     project_list_id: id,
   });
-  reloadBoard();
+  await boardStore.loadBoard();
   toggleProjectCreationModal();
 }
 
@@ -110,13 +113,12 @@ function toggleProjectCreationModal() {
   isProjectCreationModalOpen.value = !isProjectCreationModalOpen.value;
 }
 function toggleDeleteProjectListModal() {
-  isProjectListDeleteConfirmationModalOpen.value =
-    !isProjectListDeleteConfirmationModalOpen.value;
+  isProjectListDeleteConfirmationModalOpen.value = !isProjectListDeleteConfirmationModalOpen.value;
 }
 
 async function deleteProjectList() {
   await api.delete(`/project-lists/${projectListId}`);
-  reloadBoard();
+  await boardStore.loadBoard();
 }
 const handleDragOver = (event) => {
   event.preventDefault();
@@ -136,6 +138,7 @@ const handleDragOver = (event) => {
       clonedCard.style.backgroundColor = "black";
       clonedCard.innerHTML = "";
       clonedCard.style.border = "dotted white 3px";
+      clonedCard.classList.add('project-slot')
       const parentElement = event.target.parentNode;
       parentElement.insertBefore(clonedCard, event.target);
       oneCardIsBeingHovered.value = true;
@@ -153,6 +156,7 @@ const handleDragOver = (event) => {
 
 const handleDrop = async (event) => {
   event.preventDefault();
+
   oneCardIsBeingHovered.value = false;
   const draggedCardId = event.dataTransfer.getData("text/plain");
 
@@ -160,7 +164,7 @@ const handleDrop = async (event) => {
 
   event.target.style.border = "none";
   await moveCard(draggedCardId, projectListId);
-  reloadBoard();
+  await boardStore.loadBoard();
 };
 
 const moveCard = async (cardId, targetProjectListId) => {
@@ -168,6 +172,11 @@ const moveCard = async (cardId, targetProjectListId) => {
     project_list_id: targetProjectListId,
   });
 };
+
+function handleDragLeave(event){
+  event.preventDefault();
+  event.target.style.border = "none";
+}
 </script>
 <style scoped>
 .column-container {

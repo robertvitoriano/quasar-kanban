@@ -1,13 +1,12 @@
 <template>
-  <q-page class="page-wrapper">
+  <q-page class="page-wrapper" dropzone="true" @drop="handleDroppedOutside" @dragover.prevent="handleDragOverOutside"  >
     <div class="projects-list-container">
       <ProjectsList
-        v-for="projectList in projectLists"
+        v-for="projectList in boardStore.getprojectLists"
         :projects="projectList.projects"
         :key="projectList.id"
         :title="projectList.title"
         :id="projectList.id"
-        :reloadBoard="reloadBoard"
       ></ProjectsList>
     </div>
     <AddButton class="add-button" @click="toggleProjectListModal" />
@@ -47,20 +46,15 @@ import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
 
 onMounted(async () => {
-  await loadBoard();
+  await boardStore.loadBoard();
 });
 
 const boardStore = useBoardStore();
-const reloadBoard = ref(async () => await loadBoard());
-const projectLists = ref([]);
 const isProjectListModalOpen = ref(false);
 const newProjectListTitle = ref("");
 const boardId = boardStore.getBoardId;
 
-async function loadBoard() {
-  const projectsResponse = await api.get(`/boards/${boardId}`);
-  projectLists.value = projectsResponse.data.data.project_lists;
-}
+
 function toggleProjectListModal() {
   isProjectListModalOpen.value = !isProjectListModalOpen.value;
 }
@@ -70,8 +64,20 @@ async function createProjectList() {
     board_id: boardId,
   });
   newProjectListTitle.value = "";
-  await loadBoard();
+  await boardStore.loadBoard();
   toggleProjectListModal();
+}
+
+async function handleDroppedOutside(event){
+  event.preventDefault();
+  if(!event.target.classList.contains("card-container")  && !event.target.classList.contains("cards-container") ){
+    await boardStore.loadBoard();
+    console.log("DROPPED OUTSIDE")
+  }
+}
+
+function handleDragOverOutside (event) {
+  event.preventDefault();
 }
 </script>
 <style scoped>

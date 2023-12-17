@@ -182,7 +182,7 @@
 import { ref, reactive } from "vue";
 import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
-
+import { useBoardStore } from "src/stores/board";
 const isProjectModalOpen = ref(false);
 const isTaskCreateUpdateModalOpen = ref(false);
 const taskInputTitle = ref("");
@@ -199,7 +199,7 @@ let taskBeingEdited = reactive({
   description: "",
 });
 
-const { project, reloadBoard, setProjectBeingDragged, cardContainerIndex } = defineProps({
+const { project,  setProjectBeingDragged, cardContainerIndex } = defineProps({
   project: {
     title: String,
     id: Number,
@@ -214,11 +214,12 @@ const { project, reloadBoard, setProjectBeingDragged, cardContainerIndex } = def
       },
     ],
   },
-  reloadBoard: Function,
   setProjectBeingDragged:Function,
-  cardContainerIndex:Number
+    cardContainerIndex:Number
 
 });
+
+const boardStore = useBoardStore();
 function openProjectModal() {
   isProjectModalOpen.value = true;
 }
@@ -229,7 +230,7 @@ async function createNewTask() {
     project_id: project.id,
   });
   toggleCreateUpdateTaskModal();
-  reloadBoard();
+  boardStore.loadBoard();
   taskInputTitle.value = "";
   taskInputDescription.value = "";
   isCreatingTask.value = false;
@@ -241,7 +242,7 @@ async function updateTask() {
   });
 
   toggleCreateUpdateTaskModal();
-  reloadBoard();
+  boardStore.loadBoard();
   taskBeingEdited = { title: "", description: "", id: null };
   isUpdatingTask.value = false;
 }
@@ -249,26 +250,26 @@ async function updateTaskDoneState(task) {
   await api.patch(`/tasks/${task.id}`, {
     is_done: task.done,
   });
-  reloadBoard();
+  boardStore.loadBoard();
 }
 
 async function deleteTask() {
   await api.delete(`/tasks/${taskToDeleteId.value}`);
   toggleDeleteTaskModal();
-  reloadBoard();
+  boardStore.loadBoard();
 }
 async function deleteProject() {
   await api.delete(`/projects/${project.id}`);
   toggleDeleteProjectModal();
-  reloadBoard();
+  boardStore.loadBoard();
 }
 const handleDragStart = (event) => {
   event.dataTransfer.setData("text/plain", project.id);
   setProjectBeingDragged({...project, cardContainerIndex})
 };
 
-const handleDragEnd = () => {
-  // TODO: IMPLEMENT DRAG END IF NEEDED
+const handleDragEnd = async () => {
+ //await boardStore.loadBoard();
 };
 function toggleCreateUpdateTaskModal() {
   isTaskCreateUpdateModalOpen.value = !isTaskCreateUpdateModalOpen.value;
@@ -297,6 +298,7 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   isUpdatingTask.value = true;
   toggleCreateUpdateTaskModal();
 }
+
 </script>
 <style scoped>
 .card-container {
