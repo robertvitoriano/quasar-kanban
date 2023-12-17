@@ -124,9 +124,10 @@ const handleDragOver = (event) => {
   const elementBeingHoveredIsCard = event.target.classList.contains("card-container");
   const elementBeingHoveredIsCardsContainer = event.target.classList.contains("cards-container");
   const hoveredProjectId = Number(event.target.id);
-  const elementBeingHoveredIsEmpty = event.target.innerHTML === "";
+
   projectBeingDraggedIsFromTheSameList = projectBeingDragged.project_list_id === projectListId
   isProjectBeingDraggedTheSameAsBeingHovered = projectBeingDraggedIsFromTheSameList && hoveredProjectId === projectBeingDragged.id
+  const cardsContainerIsEmpty = elementBeingHoveredIsCardsContainer && !event.target.firstElementChild
 
   if (elementBeingHoveredIsCard && !projectBeingDraggedIsFromTheSameList) {
     const clonedCard = event.target.cloneNode();
@@ -139,10 +140,7 @@ const handleDragOver = (event) => {
       parentElement.insertBefore(clonedCard, event.target);
       oneCardIsBeingHovered.value = true;
     }
-  } else if (
-    elementBeingHoveredIsCardsContainer &&
-    elementBeingHoveredIsEmpty
-  ) {
+  } else if (cardsContainerIsEmpty) {
 
     event.target.style.border = "dotted white 3px";
 
@@ -155,13 +153,12 @@ const handleDragOver = (event) => {
 
 const handleDrop = async (event) => {
   event.preventDefault();
-  const draggedCardId = event.dataTransfer.getData("text/plain");
   oneCardIsBeingHovered.value = false;
+  const draggedCardId = event.dataTransfer.getData("text/plain");
 
   if (event.target.classList.contains("card-container")) event.target.remove();
 
   event.target.style.border = "none";
-
   await moveCard(draggedCardId, projectListId);
   reloadBoard();
 };
