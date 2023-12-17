@@ -23,7 +23,7 @@
           :key="project.id"
           :project="project"
           :setProjectBeingDragged="setProjectBeingDragged"
-                    :cardContainerIndex="index+1"
+          :cardContainerIndex="index+1"
         >
           ></ProjectCard
         >
@@ -176,6 +176,9 @@ const moveCard = async (cardId, targetProjectListId) => {
 function handleDragLeave(event){
   event.preventDefault();
   event.target.style.border = "none";
+  if(event.target.classList.contains('project-slot')){
+    event.target.remove();
+  }
 }
 </script>
 <style scoped>
