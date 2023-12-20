@@ -54,7 +54,6 @@ const isProjectListModalOpen = ref(false);
 const newProjectListTitle = ref("");
 const boardId = boardStore.getBoardId;
 
-
 function toggleProjectListModal() {
   isProjectListModalOpen.value = !isProjectListModalOpen.value;
 }
@@ -66,18 +65,6 @@ async function createProjectList() {
   newProjectListTitle.value = "";
   await boardStore.loadBoard();
   toggleProjectListModal();
-}
-
-async function handleDroppedOutside(event){
-  event.preventDefault();
-  if(!event.target.classList.contains("card-container")  && !event.target.classList.contains("cards-container") ){
-    await boardStore.loadBoard();
-    console.log("DROPPED OUTSIDE")
-  }
-}
-
-function handleDragOverOutside (event) {
-  event.preventDefault();
 }
 </script>
 <style scoped>

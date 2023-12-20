@@ -7,15 +7,18 @@
       @click="toggleDeleteProjectListModal()"
       class="delete-project-list-icon"
     />
-    <span class="list-title">{{ title }}</span>
+    <span class="list-title">{{ props.title }}</span>
     <div class="column-container">
       <Draggable
         v-model="draggableProjects"
         group="projects"
         class="cards-container"
-      >
-        <template #item="{ element }">
-          <ProjectCard :project="element"></ProjectCard>
+        @start="handleProjectDragStart"
+        @end="handleProjectDragEnd"
+        :itemKey="project => project.id"
+        >
+        <template #item="{ element }" >
+          <ProjectCard :project="element" :key="element.id"></ProjectCard>
         </template>
       </Draggable>
     </div>
@@ -67,13 +70,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from "vue";
+import { ref } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
 import { useBoardStore } from "src/stores/board";
 import Draggable from "vuedraggable";
-const { id: projectListId, projects } = defineProps([
+const props = defineProps([
   "projects",
   "title",
   "id",
@@ -83,11 +86,7 @@ const boardStore = useBoardStore();
 const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
 const isProjectListDeleteConfirmationModalOpen = ref(false);
-let draggableProjects = reactive([]);
-
-onMounted(() => {
-  draggableProjects = projects;
-});
+const draggableProjects = ref(props.projects);
 
 async function createNewProject(id) {
   await api.post("/projects", {
@@ -107,15 +106,23 @@ function toggleDeleteProjectListModal() {
 }
 
 async function deleteProjectList() {
-  await api.delete(`/project-lists/${projectListId}`);
+  await api.delete(`/project-lists/${props.id}`);
   await boardStore.loadBoard();
 }
 
-const moveCard = async (cardId, targetProjectListId) => {
+const moveCard = async (cardId, targetProjectListId, order) => {
   await api.patch(`/projects/${cardId}`, {
     project_list_id: targetProjectListId,
+    order: order
   });
 };
+
+const handleProjectDragStart = async (event) =>{
+}
+const handleProjectDragEnd = async (event) =>{
+  console.log({event});
+  await moveCard(event.item.__draggable_context.element.id, props.id,event.item.newIndex)
+}
 </script>
 <style scoped>
 .column-container {
@@ -201,4 +208,11 @@ const moveCard = async (cardId, targetProjectListId) => {
   flex-direction: column;
   align-items: center;
 }
+[data-draggable="true"] {
+  /* Styles for draggable elements */
+  width: fit-content;
+  cursor: grab;
+
+}
+
 </style>
