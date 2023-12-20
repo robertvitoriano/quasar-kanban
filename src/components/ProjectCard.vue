@@ -198,7 +198,7 @@ let taskBeingEdited = reactive({
   description: "",
 });
 
-const { project } = defineProps({
+const { project, reloadList } = defineProps({
   project: {
     title: String,
     id: Number,
@@ -213,6 +213,7 @@ const { project } = defineProps({
       },
     ],
   },
+  reloadList: Function
 });
 
 const boardStore = useBoardStore();
@@ -226,7 +227,8 @@ async function createNewTask() {
     project_id: project.id,
   });
   toggleCreateUpdateTaskModal();
-  boardStore.loadBoard();
+  await boardStore.loadBoard();
+  await reloadList()
   taskInputTitle.value = "";
   taskInputDescription.value = "";
   isCreatingTask.value = false;
@@ -238,7 +240,8 @@ async function updateTask() {
   });
 
   toggleCreateUpdateTaskModal();
-  boardStore.loadBoard();
+  await boardStore.loadBoard();
+  await reloadList()
   taskBeingEdited = { title: "", description: "", id: null };
   isUpdatingTask.value = false;
 }
@@ -246,18 +249,21 @@ async function updateTaskDoneState(task) {
   await api.patch(`/tasks/${task.id}`, {
     is_done: task.done,
   });
-  boardStore.loadBoard();
+  await boardStore.loadBoard();
+  await reloadList()
 }
 
 async function deleteTask() {
   await api.delete(`/tasks/${taskToDeleteId.value}`);
   toggleDeleteTaskModal();
-  boardStore.loadBoard();
+  await boardStore.loadBoard();
+  await reloadList()
 }
 async function deleteProject() {
   await api.delete(`/projects/${project.id}`);
   toggleDeleteProjectModal();
-  boardStore.loadBoard();
+  await boardStore.loadBoard();
+  await reloadList()
 }
 
 function toggleCreateUpdateTaskModal() {

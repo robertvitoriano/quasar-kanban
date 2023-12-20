@@ -14,9 +14,16 @@ export const useBoardStore = defineStore("board", {
     setBoardId(boardId) {
       this.boardId = boardId;
     },
-    async loadBoard() {
-      const projectsResponse = await api.get(`/boards/${this.boardId}`);
-      this.projectLists = [...projectsResponse.data.data.project_lists];
+    loadBoard() {
+      return new Promise(async (resolve, reject) => {
+        try {
+          const projectsResponse = await api.get(`/boards/${this.boardId}`);
+          this.projectLists = [...projectsResponse.data.data.project_lists];
+          resolve();
+        } catch (error) {
+          reject(error);
+        }
+      });
     },
   },
 });
