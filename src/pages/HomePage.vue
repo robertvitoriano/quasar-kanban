@@ -1,5 +1,5 @@
 <template>
-  <q-page class="page-wrapper" dropzone="true" @drop="handleDroppedOutside" @dragover.prevent="handleDragOverOutside"  >
+  <q-page class="page-wrapper">
     <div class="projects-list-container">
       <ProjectsList
         v-for="projectList in boardStore.getprojectLists"

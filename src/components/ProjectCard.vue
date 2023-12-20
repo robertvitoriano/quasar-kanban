@@ -1,9 +1,7 @@
 <template>
+  <div>
   <div
-    :class="`card-container card-container-${cardContainerIndex}`"
-    draggable="true"
-    @dragstart="handleDragStart"
-    @dragend="handleDragEnd"
+    :class="`card-container`"
     :id="project.id"
   >
     <q-icon
@@ -177,6 +175,7 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+</div>
 </template>
 <script setup>
 import { ref, reactive } from "vue";
@@ -199,12 +198,12 @@ let taskBeingEdited = reactive({
   description: "",
 });
 
-const { project,  setProjectBeingDragged, cardContainerIndex } = defineProps({
+const { project } = defineProps({
   project: {
     title: String,
     id: Number,
     order: Number,
-    project_list_id:Number,
+    project_list_id: Number,
     tasks: [
       {
         title: String,
@@ -214,9 +213,6 @@ const { project,  setProjectBeingDragged, cardContainerIndex } = defineProps({
       },
     ],
   },
-  setProjectBeingDragged:Function,
-    cardContainerIndex:Number
-
 });
 
 const boardStore = useBoardStore();
@@ -263,14 +259,7 @@ async function deleteProject() {
   toggleDeleteProjectModal();
   boardStore.loadBoard();
 }
-const handleDragStart = (event) => {
-  event.dataTransfer.setData("text/plain", project.id);
-  setProjectBeingDragged({...project, cardContainerIndex})
-};
 
-const handleDragEnd = async () => {
- //await boardStore.loadBoard();
-};
 function toggleCreateUpdateTaskModal() {
   isTaskCreateUpdateModalOpen.value = !isTaskCreateUpdateModalOpen.value;
 }
@@ -298,7 +287,6 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   isUpdatingTask.value = true;
   toggleCreateUpdateTaskModal();
 }
-
 </script>
 <style scoped>
 .card-container {
@@ -364,16 +352,16 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   width: 10rem;
   justify-content: space-evenly;
 }
-.delete-icon{
+.delete-icon {
   width: fit-content;
   height: fit-content;
 }
-.delete-project-icon{
+.delete-project-icon {
   position: absolute;
   top: 1rem;
   left: 1rem;
 }
-.delete-icon:hover{
+.delete-icon:hover {
   cursor: pointer;
 }
 @media (min-width: 600px) {
