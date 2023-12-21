@@ -149,7 +149,7 @@ const onProjectChange = async (event) => {
 
   const newIndex = changedProject.newIndex;
   const previousProject = props.projects[newIndex - 1];
-  const nextProject = props.projects[newIndex - 1];
+  const nextProject = props.projects[newIndex + 1];
 
   const currentProject = props.projects[newIndex];
   let newOrder;
