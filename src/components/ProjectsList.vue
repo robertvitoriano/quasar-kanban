@@ -70,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref  } from "vue";
+import { ref, watch  } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
@@ -79,11 +79,15 @@ import Draggable from "vuedraggable";
 const props = defineProps(["projects", "title", "id"]);
 
 const boardStore = useBoardStore();
+
+watch(() => {
+  reloadList();
+}, { immediate: true });
+
 const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
 const isProjectListDeleteConfirmationModalOpen = ref(false);
 let draggableProjects = ref(props.projects);
-const reloadListRef = ref(async () => await reloadList())
 
 async function reloadList() {
   draggableProjects = ref(props.projects)

@@ -198,7 +198,7 @@ let taskBeingEdited = reactive({
   description: "",
 });
 
-const { project, reloadList } = defineProps({
+const { project } = defineProps({
   project: {
     title: String,
     id: Number,
@@ -213,7 +213,6 @@ const { project, reloadList } = defineProps({
       },
     ],
   },
-  reloadList: Function
 });
 
 const boardStore = useBoardStore();
@@ -250,20 +249,17 @@ async function updateTaskDoneState(task) {
     is_done: task.done,
   });
   await boardStore.loadBoard();
-  await reloadList()
 }
 
 async function deleteTask() {
   await api.delete(`/tasks/${taskToDeleteId.value}`);
   toggleDeleteTaskModal();
   await boardStore.loadBoard();
-  await reloadList()
 }
 async function deleteProject() {
   await api.delete(`/projects/${project.id}`);
   toggleDeleteProjectModal();
   await boardStore.loadBoard();
-  await reloadList()
 }
 
 function toggleCreateUpdateTaskModal() {
