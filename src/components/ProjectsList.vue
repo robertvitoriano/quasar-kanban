@@ -8,17 +8,22 @@
       class="delete-project-list-icon"
     />
     <span class="list-title">{{ props.title }}</span>
-    <div class="column-container">
+    <div class="column-container" style="background-color: none">
       <Draggable
         v-model="draggableProjects"
         group="projects"
         class="cards-container"
-        @start="handleProjectDragStart"
-        @end="handleProjectDragEnd"
         :itemKey="(project) => project.id"
+        drag-class="drag"
+        ghost-class="ghost"
+        @change="onProjectChange"
       >
         <template #item="{ element }">
-          <ProjectCard :project="element" :key="element.id"></ProjectCard>
+          <ProjectCard
+            :project="element"
+            :key="element.id"
+            :reloadList="reloadList"
+          ></ProjectCard>
         </template>
       </Draggable>
     </div>
@@ -81,13 +86,13 @@ const props = defineProps(["projects", "title", "id"]);
 const boardStore = useBoardStore();
 let hasBeenMounted = false;
 
-onMounted(()=>{
+onMounted(() => {
   hasBeenMounted = true;
-})
+});
 
 watch(
   () => {
-    if(hasBeenMounted){
+    if (hasBeenMounted) {
       reloadList();
     }
   },
@@ -133,17 +138,32 @@ const moveCard = async (cardId, targetProjectListId, order) => {
     project_list_id: targetProjectListId,
     order: order,
   });
+  await boardStore.loadBoard();
   reloadList();
 };
 
-const handleProjectDragStart = async (event) => {};
+const onProjectChange = async (event) => {
+  const changedProject = event.added?.element || event.moved?.element;
+  console.log({changedInfo:event.added})
+  if (!changedProject) return;
 
-const handleProjectDragEnd = async (event) => {
-  await moveCard(
-    event.item.__draggable_context.element.id,
-    props.id,
-    event.item.newIndex
-  );
+  const newIndex = changedProject.newIndex;
+  const previousProject = props.projects[newIndex - 1];
+  const nextProject = props.projects[newIndex - 1];
+
+  const currentProject = props.projects[newIndex];
+  let newOrder;
+  if (currentProject) {
+    newOrder = currentProject.order;
+  }
+  if (previousProject && nextProject) {
+    newOrder = (previousProject.order + nextProject.order) / 2;
+  } else if (previousProject) {
+    newOrder = previousProject.order + previousProject.order / 2;
+  } else if (nextProject) {
+    newOrder = nextProject.order / 2;
+  }
+  return await moveCard(changedProject.id, props.id, newOrder ?? 6000);
 };
 </script>
 <style scoped>
