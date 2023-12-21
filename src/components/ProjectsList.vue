@@ -18,7 +18,7 @@
         :itemKey="(project) => project.id"
       >
         <template #item="{ element }">
-          <ProjectCard :project="element" :key="element.id" :reloadList="reloadListRef"></ProjectCard>
+          <ProjectCard :project="element" :key="element.id"></ProjectCard>
         </template>
       </Draggable>
     </div>
@@ -70,27 +70,38 @@
 </template>
 
 <script setup>
-import { ref, watch  } from "vue";
+import { ref, watch, onMounted } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
 import { useBoardStore } from "src/stores/board";
 import Draggable from "vuedraggable";
+
 const props = defineProps(["projects", "title", "id"]);
-
 const boardStore = useBoardStore();
+let hasBeenMounted = false;
 
-watch(() => {
-  reloadList();
-}, { immediate: true });
+onMounted(()=>{
+  hasBeenMounted = true;
+})
+
+watch(
+  () => {
+    if(hasBeenMounted){
+      reloadList();
+    }
+  },
+  { immediate: true }
+);
 
 const isProjectCreationModalOpen = ref(null);
 const newProjectTitle = ref(null);
 const isProjectListDeleteConfirmationModalOpen = ref(false);
+
 let draggableProjects = ref(props.projects);
 
 async function reloadList() {
-  draggableProjects = ref(props.projects)
+  draggableProjects = ref(props.projects);
 }
 
 async function createNewProject(id) {
@@ -99,7 +110,7 @@ async function createNewProject(id) {
     project_list_id: id,
   });
   await boardStore.loadBoard();
-  await reloadList();
+  reloadList();
   toggleProjectCreationModal();
 }
 
@@ -114,7 +125,7 @@ function toggleDeleteProjectListModal() {
 async function deleteProjectList() {
   await api.delete(`/project-lists/${props.id}`);
   await boardStore.loadBoard();
-  await reloadList();
+  reloadList();
 }
 
 const moveCard = async (cardId, targetProjectListId, order) => {
@@ -122,12 +133,12 @@ const moveCard = async (cardId, targetProjectListId, order) => {
     project_list_id: targetProjectListId,
     order: order,
   });
-  await reloadList();
+  reloadList();
 };
 
 const handleProjectDragStart = async (event) => {};
+
 const handleProjectDragEnd = async (event) => {
-  console.log({ event });
   await moveCard(
     event.item.__draggable_context.element.id,
     props.id,
