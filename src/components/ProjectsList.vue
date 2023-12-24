@@ -19,11 +19,7 @@
         @change="onProjectChange"
       >
         <template #item="{ element }">
-          <ProjectCard
-            :project="element"
-            :key="element.id"
-            :reloadList="reloadList"
-          ></ProjectCard>
+          <ProjectCard :project="element" :key="element.id"></ProjectCard>
         </template>
       </Draggable>
     </div>
@@ -75,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch } from "vue";
 import ProjectCard from "src/components/ProjectCard.vue";
 import AddButton from "src/components/AddButton.vue";
 import { api } from "boot/axios";
@@ -84,19 +80,10 @@ import Draggable from "vuedraggable";
 
 const props = defineProps(["projects", "title", "id"]);
 const boardStore = useBoardStore();
-let hasBeenMounted = false;
-
-onMounted(() => {
-  hasBeenMounted = true;
-});
 
 watch(
-  () => {
-    if (hasBeenMounted) {
-      reloadList();
-    }
-  },
-  { immediate: true }
+  () => props.projects,
+  (newProjects) => (draggableProjects.value = newProjects)
 );
 
 const isProjectCreationModalOpen = ref(null);
@@ -105,17 +92,12 @@ const isProjectListDeleteConfirmationModalOpen = ref(false);
 
 let draggableProjects = ref(props.projects);
 
-async function reloadList() {
-  draggableProjects = ref(props.projects);
-}
-
 async function createNewProject(id) {
   await api.post("/projects", {
     title: newProjectTitle.value,
     project_list_id: id,
   });
   await boardStore.loadBoard();
-  reloadList();
   toggleProjectCreationModal();
 }
 
@@ -130,7 +112,6 @@ function toggleDeleteProjectListModal() {
 async function deleteProjectList() {
   await api.delete(`/project-lists/${props.id}`);
   await boardStore.loadBoard();
-  reloadList();
 }
 
 const moveCard = async (cardId, targetProjectListId, order) => {
@@ -139,31 +120,34 @@ const moveCard = async (cardId, targetProjectListId, order) => {
     order: order,
   });
   await boardStore.loadBoard();
-  reloadList();
 };
 
 const onProjectChange = async (event) => {
-  const changedProject = event.added?.element || event.moved?.element;
-  console.log({changedInfo:event.added})
+  const changedProject = event?.added || event?.moved;
+
   if (!changedProject) return;
 
-  const newIndex = changedProject.newIndex;
-  const previousProject = props.projects[newIndex - 1];
-  const nextProject = props.projects[newIndex + 1];
+  const { newIndex, element:currentProject } = changedProject;
 
-  const currentProject = props.projects[newIndex];
-  let newOrder;
-  if (currentProject) {
-    newOrder = currentProject.order;
-  }
+  const previousProject = draggableProjects.value[newIndex - 1];
+  const nextProject = draggableProjects.value[newIndex + 1];
+
+  let newOrder = currentProject?.order;
+
   if (previousProject && nextProject) {
+
     newOrder = (previousProject.order + nextProject.order) / 2;
+
   } else if (previousProject) {
-    newOrder = previousProject.order + previousProject.order / 2;
+
+    newOrder = previousProject.order + (previousProject.order / 2);
+
   } else if (nextProject) {
+
     newOrder = nextProject.order / 2;
   }
-  return await moveCard(changedProject.id, props.id, newOrder ?? 6000);
+
+  return await moveCard(currentProject.id, props.id, newOrder);
 };
 </script>
 <style scoped>
