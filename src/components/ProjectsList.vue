@@ -156,16 +156,22 @@ const onProjectChange = async (event) => {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  align-items: center;
   padding-left: 1rem;
   padding-right: 1rem;
   min-height: 30vh;
   max-height: 50vh;
   overflow-y: auto;
   position: relative;
-  width: 450px;
+  width: 25vw;
 }
 .cards-container {
   height: 50vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .column-wrapper {
   background-color: black;
@@ -236,7 +242,6 @@ const onProjectChange = async (event) => {
 }
 [data-draggable="true"] {
   /* Styles for draggable elements */
-  width: fit-content;
   cursor: grab;
 }
 </style>

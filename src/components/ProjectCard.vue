@@ -294,13 +294,15 @@ function handleUpdateTaskButtonClick(taskToEdit) {
 }
 </script>
 <style scoped>
+
 .card-wrapper{
-  background-color: green;
+  width: inherit;
+  height: fit-content;
+  margin-bottom: 1rem;
 }
 .card-container {
   background-color: rgb(190, 190, 190);
-  margin-bottom: 1rem;
-  width: 400px;
+  width: inherit;
   height: 40vh;
   display: flex;
   flex-direction: column;
@@ -376,13 +378,13 @@ function handleUpdateTaskButtonClick(taskToEdit) {
  /* transform: rotate(5deg); */
 }
 .drag {
-  background-color: red;
+  background-color: transparent;
 }
 .ghost {
   visibility: hidden;
 }
 .ghost > div {
-  background-color: rgb(231, 231, 231);
+  background-color: transparent;
   margin-bottom: 1rem;
   width: 400px;
   height: 40vh;
