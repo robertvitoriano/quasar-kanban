@@ -375,7 +375,7 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   cursor: pointer;
 }
 .drag > div {
- /* transform: rotate(5deg); */
+  /* transform: rotate(5deg); */
 }
 .drag {
   background-color: transparent;
@@ -386,8 +386,6 @@ function handleUpdateTaskButtonClick(taskToEdit) {
 .ghost > div {
   background-color: transparent;
   margin-bottom: 1rem;
-  width: 400px;
-  height: 40vh;
 }
 @media (min-width: 600px) {
   .project-modal-content {
