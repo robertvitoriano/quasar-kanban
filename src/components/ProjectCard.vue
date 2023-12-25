@@ -16,7 +16,41 @@
       <q-card class="project-modal">
         <q-card-section class="project-modal-container">
           <div class="project-modal-content">
-            <div class="col text-h6 ellipsis">{{ project.title }}</div>
+            <div class="col text-h4 ellipsis">{{ project.title }}</div>
+            <div class="description-header">
+              <div class="col text-h6 ellipsis description-label">
+                Description:
+              </div>
+              <div class="edit-description-icon" v-if="!isEditingDescription">
+                <q-icon
+                  name="edit"
+                  color="dark"
+                  size="1.5rem"
+                  @click="toggleDescriptionEditor"
+                />
+              </div>
+            </div>
+            <div class="description-editor-container"  v-if="isEditingDescription">
+            <Editor
+            :api-key="textEditorKey"
+            :init="{
+              toolbar_mode: 'sliding',
+              plugins:
+                'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+              toolbar:
+                'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+            }"
+            :initial-value="projectDescriptionHTML || 'Please enter the project description!'"
+            v-model="projectDescriptionHTML"
+            @change="handleDescriptionEdition"
+          />
+          <q-btn label="Save" @click="saveDescription" color="dark" />
+          <q-btn label="Cancel" @click="toggleDescriptionEditor" />
+        </div>
+            <div class="description-container" v-else >
+              <div class="description-text" v-html="projectDescriptionHTML"></div>
+            </div>
+
             <div class="tasks-label">
               <strong class="no-tasks-warn" v-if="project.tasks.length == 0">
                 Project without tasks, add a task bellow:</strong
@@ -187,6 +221,8 @@ import { ref, reactive } from "vue";
 import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
 import { useBoardStore } from "src/stores/board";
+import Editor from "@tinymce/tinymce-vue";
+
 const isProjectModalOpen = ref(false);
 const isTaskCreateUpdateModalOpen = ref(false);
 const taskInputTitle = ref("");
@@ -196,7 +232,8 @@ const isUpdatingTask = ref(false);
 const isTaskDeleteConfirmationModalOpen = ref(false);
 const taskToDeleteId = ref(null);
 const isProjectDeleteConfirmationModalOpen = ref(null);
-
+const isEditingDescription = ref(false);
+const textEditorKey = ref(process.env.VUE_APP_TINY_KEY);
 let taskBeingEdited = reactive({
   id: null,
   title: "",
@@ -209,6 +246,7 @@ const { project } = defineProps({
     id: Number,
     order: Number,
     project_list_id: Number,
+    description: String,
     tasks: [
       {
         title: String,
@@ -220,6 +258,11 @@ const { project } = defineProps({
   },
 });
 
+const projectDescriptionHTML = ref('');
+
+if(project.description){
+  projectDescriptionHTML.value = JSON.parse(project.description)._value;
+}
 const boardStore = useBoardStore();
 function openProjectModal() {
   isProjectModalOpen.value = true;
@@ -257,7 +300,7 @@ async function updateTaskDoneState(task) {
 async function deleteTask() {
   await api.delete(`/tasks/${taskToDeleteId.value}`);
   toggleDeleteTaskModal();
-  await boardStore.loadBoard()
+  await boardStore.loadBoard();
 }
 async function deleteProject() {
   await api.delete(`/projects/${project.id}`);
@@ -275,7 +318,10 @@ function toggleDeleteTaskModal() {
 }
 function toggleDeleteProjectModal() {
   isProjectDeleteConfirmationModalOpen.value =
-  !isProjectDeleteConfirmationModalOpen.value;
+    !isProjectDeleteConfirmationModalOpen.value;
+}
+function toggleDescriptionEditor(){
+  isEditingDescription.value = !isEditingDescription.value
 }
 function handleDeleteTaskButtonClick(taskId) {
   taskToDeleteId.value = taskId;
@@ -292,10 +338,23 @@ function handleUpdateTaskButtonClick(taskToEdit) {
   isUpdatingTask.value = true;
   toggleCreateUpdateTaskModal();
 }
+
+async function saveDescription(){
+  await api.patch(`/projects/${project.id}`, {
+    description:projectDescriptionHTML,
+  });
+  toggleDescriptionEditor()
+  await boardStore.loadBoard()
+}
+
+async function handleDescriptionEdition(event){
+
+  console.log(event.target)
+
+}
 </script>
 <style scoped>
-
-.card-wrapper{
+.card-wrapper {
   width: inherit;
   height: fit-content;
   margin-bottom: 1rem;
@@ -386,6 +445,17 @@ function handleUpdateTaskButtonClick(taskToEdit) {
 .ghost > div {
   background-color: transparent;
   margin-bottom: 1rem;
+}
+.description-header{
+  display: flex;
+  width: 100%;
+}
+.edit-description-icon:hover{
+  cursor: pointer;
+
+}
+q-btn:hover{
+  cursor: pointer;
 }
 @media (min-width: 600px) {
   .project-modal-content {
