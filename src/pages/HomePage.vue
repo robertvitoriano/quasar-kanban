@@ -1,5 +1,6 @@
 <template>
   <q-page class="page-wrapper">
+    <h1 class="board-title">{{boardStore.title}}</h1>
     <div class="projects-list-container">
       <ProjectsList
         v-for="projectList in boardStore.getprojectLists"
@@ -71,17 +72,32 @@ async function createProjectList() {
 .projects-list-container {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
-  margin-top: 1rem;
+  margin-top: 7rem;
 }
 .add-button {
-  position: absolute;
+  position: fixed;
   bottom: 3rem;
   right: 3rem;
+  background-color: white;
+  color: black;
+}
+.add-button:hover{
+  background-color: black;
+  color: white;
+  border: white solid 1px;
 }
 .form-modal-buttons {
   width: 100%;
   display: flex;
   justify-content: center;
 }
+.board-title{
+  font-size: 4rem;
+  font-weight: bold;
+  position: fixed;
+  left: 45%;
+  top: 1rem;
+}
+
+
 </style>

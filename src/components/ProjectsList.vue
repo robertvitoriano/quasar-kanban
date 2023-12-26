@@ -176,6 +176,7 @@ const onProjectChange = async (event) => {
 .column-wrapper {
   background-color: black;
   margin-top: 1rem;
+  margin-right: 2rem;
   padding-bottom: 1rem;
   display: flex;
   flex-direction: column;

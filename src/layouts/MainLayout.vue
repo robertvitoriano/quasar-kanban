@@ -52,6 +52,7 @@ function handleLogout() {
   padding-left: 3rem;
   background-color: rgb(64, 64, 64);
   padding-top: 2rem !important;
+  width: fit-content;
 }
 .bar {
   background-color: black;

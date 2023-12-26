@@ -5,6 +5,7 @@ export const useBoardStore = defineStore("board", {
     boardId: "",
     cardBeingDragged: {},
     projectLists: [],
+    title: "",
   }),
   getters: {
     getBoardId: (state) => state.boardId,
@@ -19,6 +20,7 @@ export const useBoardStore = defineStore("board", {
         try {
           const projectsResponse = await api.get(`/boards/${this.boardId}`);
           this.projectLists = [...projectsResponse.data.data.project_lists];
+          this.title = projectsResponse.data.data.title;
           resolve();
         } catch (error) {
           reject(error);
