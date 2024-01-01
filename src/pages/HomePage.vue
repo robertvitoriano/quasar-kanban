@@ -1,7 +1,7 @@
 <template>
   <q-page class="page-wrapper">
     <h1 class="board-title">{{boardStore.title}}</h1>
-    <div class="projects-list-container">
+    <div :class="{'projects-list-container':true, 'max-width':boardStore.getprojectLists.length < 4}">
       <ProjectsList
         v-for="projectList in boardStore.getprojectLists"
         :projects="projectList.projects"
@@ -97,6 +97,10 @@ async function createProjectList() {
   position: fixed;
   left: 45%;
   top: 1rem;
+}
+
+.max-width {
+  width: 96vw ;
 }
 
 
