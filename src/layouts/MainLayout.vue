@@ -6,11 +6,23 @@
           <span>Quasar Projects</span>
           <div class="q-pa-md q-gutter-sm">
             <q-btn class="avatar">
+              <img
+                class="avatar-navbar-image"
+                v-if="authStore.getUser.avatar"
+                :src="authStore.getUser.avatar"
+              />
+              <NullAvatar class="avatar-navbar-image" v-else :title="authStore.getUser.name" />
               <q-menu class="dropdown-menu">
                 <div class="column items-center dropdown-menu-content">
-                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{authStore.getUser.name}}</div>
-                  <q-avatar size="40px" class="avatar-dropdown">
-                    <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
+                  <div class="text-subtitle1 q-mt-md q-mb-xs">
+                    {{ authStore.getUser.name }}
+                  </div>
+                  <q-avatar size="50px" class="avatar-dropdown">
+                    <img
+                      v-if="authStore.getUser.avatar"
+                      :src="authStore.getUser.avatar"
+                    />
+                    <NullAvatar class="avatar-navbar-image avatar-dropdownmenu" v-else :title="authStore.getUser.name" />
                   </q-avatar>
                   <q-btn
                     color="primary"
@@ -36,13 +48,15 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { useAuthStore } from "./../stores/auth";
+import NullAvatar from "components/NullAvatar.vue";
+
 const authStore = useAuthStore();
 const router = useRouter();
 
 function handleLogout() {
   localStorage.clear();
   authStore.setToken("");
-  router.push('/')
+  router.push("/");
 }
 </script>
 
@@ -70,14 +84,10 @@ function handleLogout() {
   height: inherit;
 }
 .avatar {
+  height: fit-content;
+  width: fit-content;
   border-radius: 50%;
-  height: 3rem;
-  width: 3rem;
-  background-color: none;
-  background-image: url("https://cdn.quasar.dev/img/avatar4.jpg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  padding: 0;
 }
 .avatar :hover {
   cursor: pointer;
@@ -85,8 +95,19 @@ function handleLogout() {
 .avatar-dropdown {
   margin-bottom: 1rem;
 }
-.dropdown-menu-content{
+.dropdown-menu-content {
   width: 8rem;
   height: 10rem;
+}
+.avatar-navbar-image {
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size:1.5rem;
+}
+
+.avatar-dropdownmenu{
+  background-color: black;
+  color: white;
 }
 </style>

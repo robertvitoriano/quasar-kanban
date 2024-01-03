@@ -40,6 +40,11 @@
           ]"
           v-if="!isLogin"
         />
+        <q-file outlined v-model="avatar" v-if="!isLogin">
+          <template v-slot:prepend>
+            <q-icon name="cloud_upload" />
+          </template>
+        </q-file>
         <div class="form-buttons">
           <q-btn label="Submit" type="submit" color="dark" />
           <span @click="switchForms()" v-if="isLogin" class="sign-up-link"
@@ -64,6 +69,7 @@ const name = ref(null);
 const password = ref(null);
 const passwordConfirmation = ref(null);
 const email = ref(null);
+const avatar = ref(null);
 const isLogin = ref(true);
 const authStore = useAuthStore();
 const router = useRouter();
@@ -99,12 +105,17 @@ async function handleLogin() {
 }
 
 async function handleSignUp() {
+  const formData = new FormData();
+    formData.append("email", email.value);
+    formData.append("password", password.value);
+    formData.append("password_confirmation", passwordConfirmation.value);
+    formData.append("name", name.value);
+    formData.append("avatar", avatar.value);
   try {
-    const response = await api.post("/register", {
-      email: email.value,
-      password: password.value,
-      password_confirmation: passwordConfirmation.value,
-      name: name.value
+    const response = await api.post("/register", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
     console.log({ response });
   } catch (error) {
