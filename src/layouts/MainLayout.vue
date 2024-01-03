@@ -8,7 +8,7 @@
             <q-btn class="avatar">
               <q-menu class="dropdown-menu">
                 <div class="column items-center dropdown-menu-content">
-                  <div class="text-subtitle1 q-mt-md q-mb-xs">John Doe</div>
+                  <div class="text-subtitle1 q-mt-md q-mb-xs">{{authStore.getUser.name}}</div>
                   <q-avatar size="40px" class="avatar-dropdown">
                     <img src="https://cdn.quasar.dev/img/avatar4.jpg" />
                   </q-avatar>

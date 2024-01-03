@@ -91,7 +91,7 @@ async function handleLogin() {
       password: password.value,
     });
     authStore.setToken("Bearer " + response.data.access_token);
-    authStore.setUser(response.data.level)
+    authStore.setUser(response.data.user)
     router.push("/boards-selection");
   } catch (error) {
     console.error("Login failed:", error);
