@@ -3,19 +3,24 @@ import { defineStore } from "pinia";
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: "",
+    user: {
+      name: "",
+      level: "",
+      email: "",
+      avatar: "",
+    },
   }),
   getters: {
     getToken: (state) => state.token,
-    getLevel: (state) => state.level,
+    getUser: (state) => state.user,
   },
   actions: {
     setToken(token) {
       localStorage.setItem("token", token);
       this.token = token;
     },
-    setLevel(level) {
-      localStorage.setItem("level", level);
-      this.level = level;
+    setUser(user) {
+      this.user = user;
     },
   },
 });
