@@ -11,9 +11,20 @@
                 v-if="authStore.getUser.avatar"
                 :src="authStore.getUser.avatar"
               />
-              <NullAvatar class="avatar-navbar-image" v-else :title="authStore.getUser.name" />
+              <NullAvatar
+                class="avatar-navbar-image"
+                v-else
+                :title="authStore.getUser.name"
+              />
               <q-menu class="dropdown-menu">
                 <div class="column items-center dropdown-menu-content">
+                  <q-icon
+                    name="edit"
+                    color="dark"
+                    size="1rem"
+                    class="edit-profile-button"
+                    @click="toggleEditUserModal"
+                  />
                   <div class="text-subtitle1 q-mt-md q-mb-xs">
                     {{ authStore.getUser.name }}
                   </div>
@@ -22,7 +33,11 @@
                       v-if="authStore.getUser.avatar"
                       :src="authStore.getUser.avatar"
                     />
-                    <NullAvatar class="avatar-navbar-image avatar-dropdownmenu" v-else :title="authStore.getUser.name" />
+                    <NullAvatar
+                      class="avatar-navbar-image avatar-dropdownmenu"
+                      v-else
+                      :title="authStore.getUser.name"
+                    />
                   </q-avatar>
                   <q-btn
                     color="primary"
@@ -43,21 +58,69 @@
       <router-view />
     </q-page-container>
   </q-layout>
+  <q-dialog v-model="isUserEditModalOpen">
+    <q-card class="user-edit-modal">
+      <q-card-section class="user-edit-modal-container">
+        <div class="user-edit-modal-content">
+          <q-form @submit="editUser" color="dark" class="edit-user-form">
+            <div class="edit-avatar-wrapper">
+              <div class="edit-avatar-container">
+                <img
+                  class="avatar-navbar-image"
+                  v-if="authStore.getUser.avatar"
+                  :src="authStore.getUser.avatar"
+                />
+                <NullAvatar
+                  class="avatar-navbar-image"
+                  v-else
+                  :title="authStore.getUser.name"
+                />
+              </div>
+            </div>
+            <q-input
+              filled
+              v-model="updatedUserName"
+              label="Enter the name you want to update"
+              lazy-rules
+              :rules="[
+                (val) =>
+                  (val && val.length > 0) || 'Please enter the name you want to update',
+              ]"
+              color="dark"
+            />
+            <div class="form-modal-buttons">
+              <q-btn label="Update profile" type="submit" color="dark" />
+            </div>
+          </q-form>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script setup>
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "./../stores/auth";
 import NullAvatar from "components/NullAvatar.vue";
 
 const authStore = useAuthStore();
 const router = useRouter();
+const isUserEditModalOpen = ref();
+const updatedUserName = ref(authStore.getUser.name)
 
 function handleLogout() {
   localStorage.clear();
   authStore.setToken("");
   router.push("/");
 }
+
+function toggleEditUserModal() {
+  isUserEditModalOpen.value = !isUserEditModalOpen.value;
+  updatedUserName.value = authStore.getUser.name;
+}
+
+function editUser() {}
 </script>
 
 <style scoped>
@@ -98,16 +161,46 @@ function handleLogout() {
 .dropdown-menu-content {
   width: 8rem;
   height: 10rem;
+  position: relative;
 }
 .avatar-navbar-image {
   border-radius: 50%;
   width: 2.5rem;
   height: 2.5rem;
-  font-size:1.5rem;
+  font-size: 1.5rem;
+
 }
 
-.avatar-dropdownmenu{
+.avatar-dropdownmenu {
   background-color: black;
   color: white;
+}
+.edit-profile-button {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.3rem;
+}
+.edit-profile-button:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.edit-user-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.edit-avatar-wrapper{
+  border: black solid 1px;
+  border-radius: 50%;
+  width: fit-content;
+  height: fit-content;
+  margin-bottom: 1rem;
+}
+.edit-avatar-container {
+}
+.edit-avatar-container:hover {
+  opacity: 30%;
+  cursor: pointer;
+  filter: grayscale(0.3);
 }
 </style>
