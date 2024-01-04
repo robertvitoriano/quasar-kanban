@@ -65,16 +65,30 @@
           <q-form @submit="editUser" color="dark" class="edit-user-form">
             <div class="edit-avatar-wrapper">
               <div class="edit-avatar-container">
+                <label
+                class="avatar-update-container"
+                role="button"
+                :for="id"
+              >
+                <input
+                  class="avatar-update-input"
+                  :id="id"
+                  :name="id"
+                  type="file"
+                  @change="handleFileInput($event)"
+                  :ref="ref"
+                />
                 <img
-                  class="avatar-navbar-image"
-                  v-if="authStore.getUser.avatar"
-                  :src="authStore.getUser.avatar"
-                />
-                <NullAvatar
-                  class="avatar-navbar-image"
-                  v-else
-                  :title="authStore.getUser.name"
-                />
+                class="avatar-navbar-image"
+                v-if="authStore.getUser.avatar"
+                :src="authStore.getUser.avatar"
+              />
+              <NullAvatar
+                class="avatar-navbar-image"
+                v-else
+                :title="authStore.getUser.name"
+              />
+              </label>
               </div>
             </div>
             <q-input
@@ -196,11 +210,27 @@ function editUser() {}
   height: fit-content;
   margin-bottom: 1rem;
 }
-.edit-avatar-container {
+
+.avatar-update-container{
+  display: block;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
 }
-.edit-avatar-container:hover {
-  opacity: 30%;
+.avatar-update-container:hover{
   cursor: pointer;
+  opacity: 30%;
   filter: grayscale(0.3);
+}
+.avatar-update-input{
+  opacity: 0;
+  position: absolute;
+}
+.avatar-update-input:hover{
+  cursor: pointer;
 }
 </style>
