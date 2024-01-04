@@ -62,7 +62,7 @@
     <q-card class="user-edit-modal">
       <q-card-section class="user-edit-modal-container">
         <div class="user-edit-modal-content">
-          <q-form @submit="editUser" color="dark" class="edit-user-form">
+          <q-form @submit="updateProfile" color="dark" class="edit-user-form">
             <div class="edit-avatar-wrapper">
               <label class="avatar-update-container" role="button" :for="id">
                 <input
@@ -112,6 +112,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "./../stores/auth";
 import NullAvatar from "components/NullAvatar.vue";
+import { api } from "src/boot/axios";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -140,6 +141,26 @@ function handleAvatarChange(event) {
     return;
   }
   updatedAvatarUrl.value = null;
+}
+
+async function updateProfile(){
+  if(updatedAvatar.value){
+
+    const formData = new FormData();
+    formData.append('name', updatedUserName.value);
+    formData.append('avatar',updatedAvatar.value);
+
+    await api.patch("users/update-profile", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return;
+    }
+
+    await api.patch("users/update-profile", {
+      name:updatedUserName.value,
+    });
 }
 </script>
 
@@ -236,5 +257,8 @@ function handleAvatarChange(event) {
 }
 .avatar-update-input:hover {
   cursor: pointer;
+}
+.user-edit-modal{
+  overflow: hidden;
 }
 </style>
