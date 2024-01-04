@@ -143,24 +143,32 @@ function handleAvatarChange(event) {
   updatedAvatarUrl.value = null;
 }
 
-async function updateProfile(){
-  if(updatedAvatar.value){
-
+async function updateProfile() {
+  let response = null;
+  try {
     const formData = new FormData();
-    formData.append('name', updatedUserName.value);
-    formData.append('avatar',updatedAvatar.value);
+    formData.append("name", updatedUserName.value);
+    formData.append("avatar", updatedAvatar.value);
 
-    await api.patch("users/update-profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      return;
-    }
-
-    await api.patch("users/update-profile", {
-      name:updatedUserName.value,
+    response = await api.post("users/update-profile", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
+
+    const {name, avatar } = response.data.data
+
+    authStore.setUser({
+      ...authStore.getUser,
+      name,
+      avatar,
+    });
+
+    toggleEditUserModal();
+
+  } catch (error) {
+    console.error(error);
+  }
 }
 </script>
 
@@ -258,7 +266,7 @@ async function updateProfile(){
 .avatar-update-input:hover {
   cursor: pointer;
 }
-.user-edit-modal{
+.user-edit-modal {
   overflow: hidden;
 }
 </style>
