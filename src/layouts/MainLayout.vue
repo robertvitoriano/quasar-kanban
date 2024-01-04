@@ -64,32 +64,26 @@
         <div class="user-edit-modal-content">
           <q-form @submit="editUser" color="dark" class="edit-user-form">
             <div class="edit-avatar-wrapper">
-              <div class="edit-avatar-container">
-                <label
-                class="avatar-update-container"
-                role="button"
-                :for="id"
-              >
+              <label class="avatar-update-container" role="button" :for="id">
                 <input
                   class="avatar-update-input"
                   :id="id"
                   :name="id"
                   type="file"
-                  @change="handleFileInput($event)"
+                  @change="handleAvatarChange($event)"
                   :ref="ref"
                 />
                 <img
-                class="avatar-navbar-image"
-                v-if="authStore.getUser.avatar"
-                :src="authStore.getUser.avatar"
-              />
-              <NullAvatar
-                class="avatar-navbar-image"
-                v-else
-                :title="authStore.getUser.name"
-              />
+                  class="avatar-navbar-image"
+                  v-if="updatedAvatarUrl"
+                  :src="updatedAvatarUrl"
+                />
+                <NullAvatar
+                  class="avatar-navbar-image"
+                  v-else
+                  :title="authStore.getUser.name"
+                />
               </label>
-              </div>
             </div>
             <q-input
               filled
@@ -98,7 +92,8 @@
               lazy-rules
               :rules="[
                 (val) =>
-                  (val && val.length > 0) || 'Please enter the name you want to update',
+                  (val && val.length > 0) ||
+                  'Please enter the name you want to update',
               ]"
               color="dark"
             />
@@ -121,8 +116,9 @@ import NullAvatar from "components/NullAvatar.vue";
 const authStore = useAuthStore();
 const router = useRouter();
 const isUserEditModalOpen = ref();
-const updatedUserName = ref(authStore.getUser.name)
-
+const updatedUserName = ref(authStore.getUser.name);
+const updatedAvatarUrl = ref("");
+const updatedAvatar = ref(null);
 function handleLogout() {
   localStorage.clear();
   authStore.setToken("");
@@ -132,9 +128,19 @@ function handleLogout() {
 function toggleEditUserModal() {
   isUserEditModalOpen.value = !isUserEditModalOpen.value;
   updatedUserName.value = authStore.getUser.name;
+  updatedAvatarUrl.value = authStore.getUser.avatar;
 }
 
-function editUser() {}
+function handleAvatarChange(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const filePath = URL.createObjectURL(file);
+    updatedAvatarUrl.value = filePath;
+    updatedAvatar.value = file;
+    return;
+  }
+  updatedAvatarUrl.value = null;
+}
 </script>
 
 <style scoped>
@@ -182,7 +188,6 @@ function editUser() {}
   width: 2.5rem;
   height: 2.5rem;
   font-size: 1.5rem;
-
 }
 
 .avatar-dropdownmenu {
@@ -203,7 +208,7 @@ function editUser() {}
   flex-direction: column;
   align-items: center;
 }
-.edit-avatar-wrapper{
+.edit-avatar-wrapper {
   border: black solid 1px;
   border-radius: 50%;
   width: fit-content;
@@ -211,7 +216,7 @@ function editUser() {}
   margin-bottom: 1rem;
 }
 
-.avatar-update-container{
+.avatar-update-container {
   display: block;
   width: 2.5rem;
   height: 2.5rem;
@@ -219,18 +224,17 @@ function editUser() {}
   justify-content: center;
   align-items: center;
   position: relative;
-
 }
-.avatar-update-container:hover{
+.avatar-update-container:hover {
   cursor: pointer;
   opacity: 30%;
   filter: grayscale(0.3);
 }
-.avatar-update-input{
+.avatar-update-input {
   opacity: 0;
   position: absolute;
 }
-.avatar-update-input:hover{
+.avatar-update-input:hover {
   cursor: pointer;
 }
 </style>
