@@ -1,6 +1,6 @@
 <template>
   <q-page class="wrapper">
-    <div class="boards-container">
+    <div :class="{'boards-container':true, 'max-width':boardStore.getprojectLists.length < 4}">
       <q-spinner v-if="$q.loading.isActive" :size="100" color="primary" />
 
       <q-card class="board-card" v-else v-for="board in boards" :key="board.id">
@@ -178,5 +178,8 @@ async function toggleBoardCreationModal() {
   position: absolute;
   bottom: 3rem;
   right: 3rem;
+}
+.max-width {
+  width: 96vw ;
 }
 </style>
