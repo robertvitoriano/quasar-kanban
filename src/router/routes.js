@@ -3,10 +3,24 @@ const routes = [
   {
     path: "/login",
     component: () => import("pages/LoginSignUpPage.vue"),
+    beforeEnter: (to, from, next) => {
+      if (isLoggedIn) {
+        next();
+      } else {
+        next("/login");
+      }
+    },
   },
   {
     path: "/home",
     component: () => import("layouts/MainLayout.vue"),
+    beforeEnter: (to, from, next) => {
+      if (isLoggedIn) {
+        next();
+      } else {
+        next("/login");
+      }
+    },
     children: [
       {
         path: "",
@@ -17,6 +31,13 @@ const routes = [
   {
     path: "/boards-selection",
     component: () => import("layouts/MainLayout.vue"),
+    beforeEnter: (to, from, next) => {
+      if (isLoggedIn) {
+        next();
+      } else {
+        next("/login");
+      }
+    },
     children: [
       {
         path: "",
@@ -26,19 +47,13 @@ const routes = [
   },
   {
     path: "/",
-    component: () =>
-      isLoggedIn
-        ? import("layouts/MainLayout.vue")
-        : import("layouts/EmptyLayout.vue"),
-    children: [
-      {
-        path: "",
-        component: () =>
-          isLoggedIn
-            ? import("pages/HomePage.vue")
-            : import("pages/LoginSignUpPage.vue"),
-      },
-    ],
+    beforeEnter: (to, from, next) => {
+      if (isLoggedIn) {
+        next("/home");
+      } else {
+        next("/login");
+      }
+    },
   },
   {
     path: "/:catchAll(.*)*",
