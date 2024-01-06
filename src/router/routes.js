@@ -7,7 +7,7 @@ const routes = [
       if (isLoggedIn) {
         next();
       } else {
-        next("/login");
+        next({ path: "/login" });
       }
     },
   },
@@ -18,7 +18,7 @@ const routes = [
       if (isLoggedIn) {
         next();
       } else {
-        next("/login");
+        next({ path: "/login" });
       }
     },
     children: [
@@ -35,7 +35,7 @@ const routes = [
       if (isLoggedIn) {
         next();
       } else {
-        next("/login");
+        next({ path: "/login" });
       }
     },
     children: [
@@ -49,9 +49,9 @@ const routes = [
     path: "/",
     beforeEnter: (to, from, next) => {
       if (isLoggedIn) {
-        next("/home");
+        next({ path: "/home" });
       } else {
-        next("/login");
+        next({ path: "/login" });
       }
     },
   },
