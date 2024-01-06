@@ -153,4 +153,12 @@ async function handleSignUp() {
   text-align: center;
   font-size: 4rem;
 }
+@media screen and (max-width: 830px) {
+  .login-form{
+    width: 80vw;
+  }
+  .project-title {
+    font-size: 2rem;
+  }
+}
 </style>

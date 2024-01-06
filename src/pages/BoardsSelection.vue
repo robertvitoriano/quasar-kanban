@@ -198,6 +198,15 @@ async function toggleBoardCreationModal() {
   }
   .board-card {
     margin-bottom: 1rem ;
+    height: 360px;
+    width: 360px;
+  }
+  .board-cover{
+     width: 250px;
+     height: 180px;
+  }
+  .board-title {
+    font-size: medium;
   }
 }
 </style>
