@@ -22,3 +22,10 @@ body {
   overflow-y: hidden; /* Hide the vertical scrollbar */
   overflow-x: auto;
 }
+@media screen and (max-width: 1330px) {
+  body {
+    max-height: 100vh;
+    overflow-y: auto; /* Hide the vertical scrollbar */
+    overflow-x: hidden;
+  }
+}

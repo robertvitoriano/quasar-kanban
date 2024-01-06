@@ -3,7 +3,7 @@
     <q-header elevated>
       <q-bar class="bar">
         <div class="bar-content">
-          <span>Quasar Projects</span>
+          <span class="board-title">{{boardStore.title || "Quasar Kanban"}}</span>
           <div class="q-pa-md q-gutter-sm">
             <q-btn class="avatar">
               <img
@@ -111,10 +111,12 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { useAuthStore } from "./../stores/auth";
+import { useBoardStore } from "src/stores/board";
 import NullAvatar from "components/NullAvatar.vue";
 import { api } from "src/boot/axios";
 
 const authStore = useAuthStore();
+const boardStore = useBoardStore();
 const router = useRouter();
 const isUserEditModalOpen = ref();
 const updatedUserName = ref(authStore.getUser.name);
@@ -268,5 +270,14 @@ async function updateProfile() {
 }
 .user-edit-modal {
   overflow: hidden;
+}
+@media screen and (max-width: 1330px) {
+  .page-container{
+    padding: 0;
+    width: 100%;
+  }
+  .bar-content{
+    width: 50%;
+  }
 }
 </style>

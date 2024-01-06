@@ -1,6 +1,5 @@
 <template>
   <q-page class="page-wrapper">
-    <h1 class="board-title">{{boardStore.title}}</h1>
     <div :class="{'projects-list-container':true, 'max-width':boardStore.getprojectLists.length < 4}">
       <ProjectsList
         v-for="projectList in boardStore.getprojectLists"
@@ -91,17 +90,19 @@ async function createProjectList() {
   display: flex;
   justify-content: center;
 }
-.board-title{
-  font-size: 4rem;
-  font-weight: bold;
-  position: fixed;
-  left: 45%;
-  top: 1rem;
-}
 
 .max-width {
   width: 96vw ;
 }
 
-
+@media screen and (max-width: 1330px) {
+  .projects-list-container{
+    justify-content: center;
+    flex-direction: column;
+  }
+  .page-wrapper{
+    display:flex;
+    justify-content: center;
+  }
+}
 </style>

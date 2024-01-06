@@ -245,4 +245,16 @@ const onProjectChange = async (event) => {
   /* Styles for draggable elements */
   cursor: grab;
 }
+@media screen and (max-width: 1330px) {
+
+  .column-wrapper{
+    margin-right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .column-container{
+    width: 80vw;
+  }
+}
 </style>

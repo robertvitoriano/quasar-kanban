@@ -118,6 +118,8 @@ async function createBoard() {
   await boardStore.loadBoard();
 
   toggleBoardCreationModal();
+  await loadBoards();
+
 }
 
 async function toggleBoardCreationModal() {
@@ -175,11 +177,27 @@ async function toggleBoardCreationModal() {
   position: relative;
 }
 .add-button {
-  position: absolute;
+  position: fixed;
   bottom: 3rem;
   right: 3rem;
 }
 .max-width {
   width: 96vw ;
+}
+@media screen and (max-width: 1330px) {
+  .boards-container{
+    flex-direction: column;
+    align-items: center;
+    justify-content: initial;
+    margin-top: 1rem;
+
+  }
+  .wrapper{
+    overflow-y: auto;
+
+  }
+  .board-card {
+    margin-bottom: 1rem ;
+  }
 }
 </style>
