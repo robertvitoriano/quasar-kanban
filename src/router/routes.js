@@ -1,26 +1,23 @@
 const isLoggedIn = !!localStorage.getItem("token");
+
+const requireAuth = (to, from, next) => {
+  if (isLoggedIn) {
+    next();
+  } else {
+    next({ path: "/login" });
+  }
+};
+
 const routes = [
   {
     path: "/login",
     component: () => import("pages/LoginSignUpPage.vue"),
-    beforeEnter: (to, from, next) => {
-      if (isLoggedIn) {
-        next();
-      } else {
-        next({ path: "/login" });
-      }
-    },
+    beforeEnter: requireAuth,
   },
   {
     path: "/home",
     component: () => import("layouts/MainLayout.vue"),
-    beforeEnter: (to, from, next) => {
-      if (isLoggedIn) {
-        next();
-      } else {
-        next({ path: "/login" });
-      }
-    },
+    beforeEnter: requireAuth,
     children: [
       {
         path: "",
@@ -31,13 +28,7 @@ const routes = [
   {
     path: "/boards-selection",
     component: () => import("layouts/MainLayout.vue"),
-    beforeEnter: (to, from, next) => {
-      if (isLoggedIn) {
-        next();
-      } else {
-        next({ path: "/login" });
-      }
-    },
+    beforeEnter: requireAuth,
     children: [
       {
         path: "",
@@ -49,7 +40,7 @@ const routes = [
     path: "/",
     beforeEnter: (to, from, next) => {
       if (isLoggedIn) {
-        next({ path: "/home" });
+        next({ path: "/boards-selection" });
       } else {
         next({ path: "/login" });
       }
@@ -57,7 +48,7 @@ const routes = [
   },
   {
     path: "/:catchAll(.*)*",
-    component: () => import("pages/ErrorNotFound.vue"),
+    component: () => import("pages/LoginSignUpPage.vue"),
   },
 ];
 

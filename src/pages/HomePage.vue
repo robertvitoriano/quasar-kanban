@@ -47,7 +47,7 @@ import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
 
 onMounted(async () => {
-  await boardStore.loadBoard();
+    await boardStore.loadBoard();
 });
 
 const boardStore = useBoardStore();
