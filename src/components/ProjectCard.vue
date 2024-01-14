@@ -8,6 +8,7 @@
         @click="toggleDeleteProjectModal"
         class="delete-icon delete-project-icon"
       />
+      <MembersIndicator/>
       <span class="project-title" @click="openProjectModal(project)">{{
         project.title
       }}</span>
@@ -222,7 +223,7 @@ import AddButton from "components/AddButton.vue";
 import { api } from "boot/axios";
 import { useBoardStore } from "src/stores/board";
 import Editor from "@tinymce/tinymce-vue";
-
+import MembersIndicator from 'components/MembersIndicator.vue'
 const isProjectModalOpen = ref(false);
 const isTaskCreateUpdateModalOpen = ref(false);
 const taskInputTitle = ref("");

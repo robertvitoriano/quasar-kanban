@@ -245,7 +245,7 @@ const onProjectChange = async (event) => {
   /* Styles for draggable elements */
   cursor: grab;
 }
-@media screen and (max-width: 1330px) {
+@media screen and (max-width: 830px) {
 
   .column-wrapper{
     margin-right: 0;

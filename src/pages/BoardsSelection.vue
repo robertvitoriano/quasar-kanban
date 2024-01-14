@@ -184,7 +184,7 @@ async function toggleBoardCreationModal() {
 .max-width {
   width: 96vw ;
 }
-@media screen and (max-width: 1330px) {
+@media screen and (max-width: 830px) {
   .boards-container{
     flex-direction: column;
     align-items: center;

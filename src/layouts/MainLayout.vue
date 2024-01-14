@@ -271,7 +271,7 @@ async function updateProfile() {
 .user-edit-modal {
   overflow: hidden;
 }
-@media screen and (max-width: 1330px) {
+@media screen and (max-width: 830px) {
   .page-container{
     padding: 0;
     width: 100%;

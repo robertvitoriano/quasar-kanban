@@ -173,6 +173,9 @@ module.exports = configure(function (/* ctx */) {
       inspectPort: 5858,
 
       bundler: "packager", // 'packager' or 'builder'
+      platform: "win32",
+      arch: "x64", // or 'ia32' for 32-bit architecture
+      target: "nsis", // or 'portable' or others as needed
 
       packager: {
         // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -184,7 +187,6 @@ module.exports = configure(function (/* ctx */) {
         // Windows only
         // win32metadata: { ... }
       },
-
       builder: {
         // https://www.electron.build/configuration/configuration
 

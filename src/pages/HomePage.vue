@@ -71,7 +71,7 @@ async function createProjectList() {
 .projects-list-container {
   display: flex;
   flex-direction: row;
-  margin-top: 7rem;
+  margin-top: 2rem;
 }
 .add-button {
   position: fixed;
@@ -95,7 +95,7 @@ async function createProjectList() {
   width: 96vw ;
 }
 
-@media screen and (max-width: 1330px) {
+@media screen and (max-width: 830px) {
   .projects-list-container{
     justify-content: center;
     flex-direction: column;
