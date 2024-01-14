@@ -8,7 +8,7 @@
         @click="toggleDeleteProjectModal"
         class="delete-icon delete-project-icon"
       />
-      <MembersIndicator/>
+      <MembersIndicator :members="project.members" />
       <span class="project-title" @click="openProjectModal(project)">{{
         project.title
       }}</span>
@@ -16,6 +16,7 @@
     <q-dialog v-model="isProjectModalOpen">
       <q-card class="project-modal">
         <q-card-section class="project-modal-container">
+          <span class="card-enter-option" @click="enterCard">Entrar no card</span>
           <div class="project-modal-content">
             <div class="col text-h4 ellipsis">{{ project.title }}</div>
             <div class="description-header">
@@ -248,6 +249,13 @@ const { project } = defineProps({
     order: Number,
     project_list_id: Number,
     description: String,
+    members:[
+      {
+        id:Number,
+        name:String,
+        avatar:String
+      }
+    ],
     tasks: [
       {
         title: String,
@@ -351,6 +359,12 @@ async function saveDescription(){
 async function handleDescriptionEdition(event){
 
   console.log(event.target)
+}
+
+async function enterCard(){
+  await api.post('/projects/members/enter', {project_id:project.id,})
+  await boardStore.loadBoard();
+  isProjectModalOpen.value = false;
 
 }
 </script>
@@ -469,6 +483,15 @@ q-btn:hover{
     border-radius: 3px;
     width: 100%;
     margin-bottom: 1rem;
+  }
+
+  .card-enter-option{
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  .card-enter-option:hover{
+    text-decoration: underline;
+    cursor: pointer;
   }
 }
 </style>

@@ -5,41 +5,9 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
 
+defineProps(['members'])
 
-const members = ref([
-  { id:1,
-    avatar:
-      "https://musicimage.xboxlive.com/catalog/video.movie.8D6KGWXZHFXH/image?locale=en-us&mode=crop&purposes=BoxArt&q=90&h=300&w=200&format=jpg",
-    name: "Bob",
-  },
-  {
-    avatar:
-      "https://musicimage.xboxlive.com/catalog/video.movie.8D6KGWXZHFXH/image?locale=en-us&mode=crop&purposes=BoxArt&q=90&h=300&w=200&format=jpg",
-    name: "Bob",
-  },
-  { id:2,
-    avatar:
-      "https://musicimage.xboxlive.com/catalog/video.movie.8D6KGWXZHFXH/image?locale=en-us&mode=crop&purposes=BoxArt&q=90&h=300&w=200&format=jpg",
-    name: "Bob",
-  },
-  { id:3,
-    avatar:
-      "https://musicimage.xboxlive.com/catalog/video.movie.8D6KGWXZHFXH/image?locale=en-us&mode=crop&purposes=BoxArt&q=90&h=300&w=200&format=jpg",
-    name: "Bob",
-  },
-  { id:4,
-    avatar:
-      "https://musicimage.xboxlive.com/catalog/video.movie.8D6KGWXZHFXH/image?locale=en-us&mode=crop&purposes=BoxArt&q=90&h=300&w=200&format=jpg",
-    name: "Bob",
-  },
-  { id: 5,
-    avatar:
-      "https://musicimage.xboxlive.com/catalog/video.movie.8D6KGWXZHFXH/image?locale=en-us&mode=crop&purposes=BoxArt&q=90&h=300&w=200&format=jpg",
-    name: "Bob",
-  },
-]);
 </script>
 <style scoped>
 .membership-indicator {
