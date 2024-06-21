@@ -15,5 +15,8 @@ const props = defineProps(["title"]);
   justify-content: center;
   align-items: center;
   font-size: inherit;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 }
 </style>
