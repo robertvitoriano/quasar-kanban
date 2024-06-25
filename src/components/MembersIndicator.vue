@@ -16,11 +16,7 @@ defineProps(['members'])
 </script>
 <style scoped>
 .membership-indicator {
-  width: 2vw;
-  height: 2vw;
-  border: 2px solid white;
   border-radius: 50%;
-  background-color: green;
   position: absolute;
 }
 
