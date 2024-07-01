@@ -1,89 +1,63 @@
 <template>
   <q-page class="wrapper">
-      <q-spinner v-if="$q.loading.isActive" :size="100" color="primary" />
-      <div   :class="{
-        'boards-container': true,
-        'max-width': boardStore.getprojectLists.length < 4,
-      }" v-if="boards.length >= 1">
-        <q-card class="board-card" v-for="board in boards" :key="board.id">
-          <q-card-section
-            class="board-card-container"
-          >
-           <div class="board-card-header">
-              <p @click="navigateToBoard(board.id)" class="enter-board-button">Enter Board</p>
-              <div class="more-options-button" v-if="authStore.getUser.level === 'admin'" >
-                <span class="more-options-icon">...</span>
-                <q-menu fit class="dropdown-menu" dark>
-                  <q-list style="min-width: 100px">
-                    <q-item clickable>
-                      <q-item-section @click="openMembersAditionModal(board.id)">Add new users</q-item-section>
-                    </q-item>
-                    <q-item clickable class="delete-board-button" @click="openBoardToBeDeletedConfirmationModal(board.id)">
-                      <q-item-section >Delete board</q-item-section>
-                    </q-item>
-                  </q-list>
-                </q-menu>
+    <q-spinner v-if="$q.loading.isActive" :size="100" color="primary" />
+    <div :class="{
+      'boards-container': true,
+      'max-width': boardStore.getprojectLists.length < 4,
+    }" v-if="boards.length >= 1">
+      <q-card class="board-card" v-for="board in boards" :key="board.id">
+        <q-card-section class="board-card-container">
+          <div class="board-card-header">
+            <p @click="navigateToBoard(board.id)" class="enter-board-button">Enter Board</p>
+            <div class="more-options-button" v-if="authStore.getUser.level === 'admin'">
+              <span class="more-options-icon">...</span>
+              <q-menu fit class="dropdown-menu" dark>
+                <q-list style="min-width: 100px">
+                  <q-item clickable>
+                    <q-item-section @click="openMembersAditionModal(board.id)">Add new users</q-item-section>
+                  </q-item>
+                  <q-item clickable class="delete-board-button"
+                    @click="openBoardToBeDeletedConfirmationModal(board.id)">
+                    <q-item-section>Delete board</q-item-section>
+                  </q-item>
+                </q-list>
+              </q-menu>
             </div>
-           </div>
-            <div class="board-card-content">
-              <h2 class="board-title">{{ displaySmallerWord(board.title) }}</h2>
-              <div class="board-cover-container">
-                <img class="board-cover" :src="board.cover" />
+          </div>
+          <div class="board-card-content">
+            <h2 class="board-title">{{ displaySmallerWord(board.title) }}</h2>
+            <div class="board-cover-container">
+              <img class="board-cover" :src="board.cover" />
               <p class="board-description">
                 {{ displaySmallerWord(board.description) }}
               </p>
             </div>
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-      <div class="not-member-of-board-container" v-else-if="boards.length === 0 && authStore.getUser.level === 'user' " >
-        <span class="not-member-of-board-warning">You are not a Member of any board, ask access to an administrator</span>
-      </div>
-    <AddButton
-      class="add-button"
-      @click="toggleBoardCreationModal"
-      v-if="authStore.getUser.level === 'admin'"
-    />
+          </div>
+        </q-card-section>
+      </q-card>
+    </div>
+    <div class="not-member-of-board-container" v-else-if="boards.length === 0 && authStore.getUser.level === 'user'">
+      <span class="not-member-of-board-warning">You are not a Member of any board</span>
+    </div>
+    <AddButton class="add-button" @click="toggleBoardCreationModal" />
   </q-page>
   <q-dialog v-model="isBoardCreationModalOpen">
     <q-card class="board-creation-modal">
       <q-card-section class="board-creation-modal-container">
         <div class="board-creation-modal-content">
           <q-form @submit="createBoard" color="dark">
-            <q-input
-              filled
-              v-model="newBoardTitle"
-              label="Title of the new board"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) || 'Enter the title of the board',
-              ]"
-              color="dark"
-            />
-            <q-input
-              filled
-              v-model="newBoardDescription"
-              label="Description of the new board"
-              lazy-rules
-              :rules="[
-                (val) =>
-                  (val && val.length > 0) ||
-                  'Enter the description of the board',
-              ]"
-              color="dark"
-            />
-            <q-input
-              filled
-              v-model="newBoardCover"
-              label="paste the image url"
-              lazy-rules
-              :rules="[
-                (val) => (val && val.length > 0) || 'Enter the board cover',
-              ]"
-              color="dark"
-            />
+            <q-input filled v-model="newBoardTitle" label="Title of the new board" lazy-rules :rules="[
+              (val) =>
+                (val && val.length > 0) || 'Enter the title of the board',
+            ]" color="dark" />
+            <q-input filled v-model="newBoardDescription" label="Description of the new board" lazy-rules :rules="[
+              (val) =>
+                (val && val.length > 0) ||
+                'Enter the description of the board',
+            ]" color="dark" />
+            <q-input filled v-model="newBoardCover" label="paste the image url" lazy-rules :rules="[
+              (val) => (val && val.length > 0) || 'Enter the board cover',
+            ]" color="dark" />
             <div class="form-modal-buttons">
               <q-btn label="Create Board" type="submit" color="dark" />
             </div>
@@ -112,18 +86,11 @@
       <q-card-section class="delete-modal-container">
         <div class="members-adition-modal-content">
           <q-list style="min-width: 200px">
-            <q-item class="user-list-item-container" clickable v-for="user in nonMembers" :key="user.id" @click="selectNewMembersToBeAdded(user.id)">
-              {{displaySmallerWord(user.name)}}
-                <img
-                class="avatar"
-                v-if="user.avatar"
-                :src="user.avatar"/>
-              <NullAvatar
-                :color="'black'"
-                class="avatar"
-                v-else
-                :title="user.name"
-              />
+            <q-item class="user-list-item-container" clickable v-for="user in nonMembers" :key="user.id"
+              @click="selectNewMembersToBeAdded(user.id)">
+              {{ displaySmallerWord(user.name) }}
+              <img class="avatar" v-if="user.avatar" :src="user.avatar" />
+              <NullAvatar :color="'black'" class="avatar" v-else :title="user.name" />
             </q-item>
           </q-list>
         </div>
@@ -210,45 +177,45 @@ async function createBoard() {
 async function toggleBoardCreationModal() {
   isBoardCreationModalOpen.value = !isBoardCreationModalOpen.value;
 }
-function toggleBoardDeletionConfirmationModal(){
-  isBoardDeleteConfirmationModalOpen.value =  !isBoardDeleteConfirmationModalOpen.value;
+function toggleBoardDeletionConfirmationModal() {
+  isBoardDeleteConfirmationModalOpen.value = !isBoardDeleteConfirmationModalOpen.value;
 }
-function openBoardToBeDeletedConfirmationModal(boardId){
+function openBoardToBeDeletedConfirmationModal(boardId) {
   boardToBeDeletedId.value = boardId
   toggleBoardDeletionConfirmationModal();
 }
-async function deleteBoard(){
+async function deleteBoard() {
   await api.delete(`/boards/${boardToBeDeletedId.value}`);
   await loadBoards();
   toggleBoardDeletionConfirmationModal();
 }
-function toggleMembersAditionModalOpen(){
-  isMembersAditionModalOpen.value =  !isMembersAditionModalOpen.value;
+function toggleMembersAditionModalOpen() {
+  isMembersAditionModalOpen.value = !isMembersAditionModalOpen.value;
 }
-async function openMembersAditionModal(boardId){
- const response = await api.get(`/boards/non-members/${boardId}`)
- nonMembers.value = response.data.users
- boardIdToAddNewUsers.value = boardId;
- toggleMembersAditionModalOpen();
+async function openMembersAditionModal(boardId) {
+  const response = await api.get(`/boards/non-members/${boardId}`)
+  nonMembers.value = response.data.users
+  boardIdToAddNewUsers.value = boardId;
+  toggleMembersAditionModalOpen();
 }
 
-async function selectNewMembersToBeAdded(userId){
+async function selectNewMembersToBeAdded(userId) {
   newUserIdsToBeAdded.value = [userId];
   toggleMembersAditionModalOpen();
   toggleAditionConfirmationModal()
 }
-async function addNewMembersToBoard(){
-  await api.post(`/boards/add-users-to-board`,{user_ids: newUserIdsToBeAdded.value, board_id: boardIdToAddNewUsers.value});
+async function addNewMembersToBoard() {
+  await api.post(`/boards/add-users-to-board`, { user_ids: newUserIdsToBeAdded.value, board_id: boardIdToAddNewUsers.value });
   toggleAditionConfirmationModal();
 }
 
-function toggleAditionConfirmationModal(){
+function toggleAditionConfirmationModal() {
   isUserAditionConfirmationModalOpen.value = !isUserAditionConfirmationModalOpen.value;
 }
-function displaySmallerWord(word){
+function displaySmallerWord(word) {
 
-  if(word.length > 19){
-    return word.slice(0,16) +'...'
+  if (word.length > 19) {
+    return word.slice(0, 16) + '...'
   }
   return word;
 
@@ -281,6 +248,7 @@ function displaySmallerWord(word){
   height: 500px;
   width: 500px;
 }
+
 .board-cover-container {
   width: 100%;
   display: flex;
@@ -295,72 +263,85 @@ function displaySmallerWord(word){
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
+
 .board-description {
   color: rgb(167, 157, 157);
 }
+
 .board-cover {
   width: 400px;
   height: 300px;
   margin-bottom: 1rem;
 
 }
+
 .board-cover-container {
   position: relative;
 }
+
 .add-button {
   position: fixed;
   bottom: 3rem;
   right: 3rem;
 }
+
 .max-width {
   width: 96vw;
 }
-.more-options-button{
+
+.more-options-button {
   border: none;
-  height:fit-content;
+  height: fit-content;
   width: fit-content;
   position: absolute;
   right: 0.5rem;
   top: -.5rem;
 }
+
 .more-options-button .q-focus-helper {
   display: none;
 }
-.more-options-icon{
+
+.more-options-icon {
   font-weight: bold;
   color: black;
   font-size: 2rem;
 }
 
-.more-options-icon:hover{
+.more-options-icon:hover {
   color: white;
   cursor: pointer;
 
 }
-.board-card-container{
+
+.board-card-container {
   position: relative;
 }
 
-.not-member-of-board-warning{
+.not-member-of-board-warning {
   color: white;
   font-size: 1rem;
 }
-.not-member-of-board-container{
+
+.not-member-of-board-container {
   background-color: black;
   border: solid 2px white;
   padding: 2rem;
   border-radius: 1rem;
 }
-.enter-board-button{
+
+.enter-board-button {
   margin-bottom: 1rem;
   font-size: 2.5rem;
   text-decoration: underline;
 }
-.enter-board-button:hover{
+
+.enter-board-button:hover {
   cursor: pointer;
   color: white;
 }
-.board-card-header{
+
+.board-card-header {
   width: 100%;
   display: flex;
   justify-content: center;
@@ -371,16 +352,19 @@ function displaySmallerWord(word){
   color: white;
   font-weight: bold;
 }
+
 .delete-confirmation-modal-content {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .delete-confirmation-buttons {
   display: flex;
   width: 10rem;
   justify-content: space-evenly;
 }
+
 .avatar {
   border-radius: 50%;
   width: 2.5rem;
@@ -389,15 +373,18 @@ function displaySmallerWord(word){
   background-color: black;
   color: white;
 }
-.user-list-item{
+
+.user-list-item {
   width: fit-content;
   height: fit-content;
 }
-.user-list-item-container{
+
+.user-list-item-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 @media screen and (max-width: 830px) {
   .boards-container {
     flex-direction: column;
@@ -405,18 +392,22 @@ function displaySmallerWord(word){
     justify-content: initial;
     margin-top: 1rem;
   }
+
   .wrapper {
     overflow-y: auto;
   }
+
   .board-card {
     margin-bottom: 1rem;
     height: 360px;
     width: 360px;
   }
+
   .board-cover {
     width: 250px;
     height: 180px;
   }
+
   .board-title {
     font-size: medium;
   }
