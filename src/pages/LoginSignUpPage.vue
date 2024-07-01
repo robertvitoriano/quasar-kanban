@@ -47,7 +47,7 @@ const authStore = useAuthStore();
 const router = useRouter();
 onMounted(() => {
   GoogleAuth.initialize({
-    clientId: '68191313756-8ftmsn9icsvkm6t5vota2s30b5j7q8c0.apps.googleusercontent.com',
+    clientId: process.env.GOOGLE_CLIENT_ID,
     scopes: ['profile', 'email'],
     grantOfflineAccess: true,
   });
@@ -77,7 +77,7 @@ async function handleLogin() {
     });
     authStore.setToken("Bearer " + response.data.access_token);
     authStore.setUser(response.data.user)
-    router.push("/boards-selection");
+    router.push('/boards-selection')
   } catch (error) {
     console.error("Login failed:", error);
   }
@@ -96,7 +96,9 @@ async function handleSignUp() {
         "Content-Type": "multipart/form-data",
       },
     });
-    console.log({ response });
+    authStore.setToken("Bearer " + response.data.access_token);
+    authStore.setUser(response.data.user)
+    router.push('/boards-selection')
   } catch (error) {
     console.error("Signup failed:", error);
   }
@@ -110,9 +112,9 @@ async function loginWithGoogle() {
       token: accessToken
     })
     authStore.setToken("Bearer " + loginResponse.data.access_token);
-    authStore.setUser(response.data.user)
+    authStore.setUser(loginResponse.data.user)
 
-    router.push("/boards-selection");
+    router.push('/boards-selection')
   } catch (error) {
 
     console.error(error);

@@ -12,12 +12,10 @@ const routes = [
   {
     path: "/login",
     component: () => import("pages/LoginSignUpPage.vue"),
-    beforeEnter: requireAuth,
   },
   {
     path: "/home",
     component: () => import("layouts/MainLayout.vue"),
-    beforeEnter: requireAuth,
     children: [
       {
         path: "",
@@ -28,7 +26,6 @@ const routes = [
   {
     path: "/boards-selection",
     component: () => import("layouts/MainLayout.vue"),
-    beforeEnter: requireAuth,
     children: [
       {
         path: "",
