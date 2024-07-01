@@ -55,9 +55,12 @@
                 (val && val.length > 0) ||
                 'Enter the description of the board',
             ]" color="dark" />
-            <q-input filled v-model="newBoardCover" label="paste the image url" lazy-rules :rules="[
-              (val) => (val && val.length > 0) || 'Enter the board cover',
-            ]" color="dark" />
+            <h2>Upload board cover</h2>
+            <q-file outlined v-model="newBoardCover">
+              <template v-slot:prepend>
+                <q-icon name="cloud_upload" />
+              </template>
+            </q-file>
             <div class="form-modal-buttons">
               <q-btn label="Create Board" type="submit" color="dark" />
             </div>
@@ -160,11 +163,19 @@ function navigateToBoard(selectedBoardId) {
 }
 
 async function createBoard() {
-  await api.post("/boards", {
-    title: newBoardTitle.value,
-    cover: newBoardCover.value,
-    description: newBoardDescription.value,
-  });
+  try {
+    const formData = new FormData();
+    formData.append("title", newBoardTitle.value);
+    formData.append("cover", newBoardCover.value);
+    formData.append("description", newBoardDescription.value);
+    await api.post("/boards", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  } catch (error) {
+    console.error("board creation error:", error);
+  }
 
   newBoardTitle.value = "";
   newBoardCover.value = "";

@@ -7,7 +7,7 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  baseURL: "https://main-backend.robertvitoriano.com:8000/api",
+  baseURL: "http://localhost:8000/api",
 });
 api.interceptors.request.use(
   (config) => {

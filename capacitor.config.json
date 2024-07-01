@@ -1,0 +1,5 @@
+{
+  "appId": "com.kanban.app",
+  "appName": "kanban",
+  "webDir": "dist/spa"
+}
