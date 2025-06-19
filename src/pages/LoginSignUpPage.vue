@@ -36,6 +36,9 @@ import { useRouter } from "vue-router";
 import { api } from "boot/axios";
 import { useAuthStore } from "./../stores/auth";
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { Plugins } from '@capacitor/core';
+
+const { Navigator } = Plugins;
 
 const name = ref(null);
 const password = ref(null);
@@ -114,7 +117,7 @@ async function loginWithGoogle() {
     authStore.setToken("Bearer " + loginResponse.data.access_token);
     authStore.setUser(loginResponse.data.user)
 
-    router.push('/boards-selection')
+    await Navigator.navigate({ url: '/boards-selection' });
   } catch (error) {
 
     console.error(error);
