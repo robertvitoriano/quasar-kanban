@@ -23,12 +23,13 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-      - name: Build
-        run: npm run build
+
       - name: Create .env file
         run: |
           echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
           echo "API_URL=${{ secrets.API_URL }}" >> .env
+      - name: Build
+        run: npm run build
 
       - name: Upload .env to S3
         env:
